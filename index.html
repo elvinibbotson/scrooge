@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+  	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+  	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+  	<title>Money</title>
+	<link rel="manifest" href="manifest.json">
+  	<link rel="stylesheet" type="text/css" href="moneyStyles.css">
+  	<meta name="application-name" content="Money">
+  	<meta name="msapplication-square150x150logo" content="icons/icon150px.png">
+  	<meta name="msapplication-square70x70logo" content="icons/icon75px.png">
+</head>
+
+<body>
+
+<header class="header">
+	<button id="buttonMenu" type="menu" menu="menu" class="headerButton" aria-label="Menu"></button>
+	<h1 id="heading" class="header__title">Money</h1>
+	<button id="buttonBack" class="headerButton" aria-label="Back"></button>
+</header>
+
+<main id="main" class="main">
+   <div class="container">
+        <div class="content">
+			<ul id="list" class="list"></ul>
+        </div>
+		<div id='buttonNew' class='round-button'><img src='addButton24px.svg'/></div>
+    </div>
+</main>
+
+<menu type="context" id="menu">
+	<p><menuitem id="import">import</menuitem></p>
+	<p><menuitem id="export">export</menuitem></p>
+  </menu>
+  
+  <div id="importDialog" class="dialog-container">
+	<div class="dialog">
+		<div class="dialog-title">Load from saved file</div>
+		<input type="file" id="fileChooser">
+		<div class="dialog-body">Imported data will replace any records you already have.</div>
+    		<div class="dialog-buttons">
+			<button id="buttonCancelImport" class="button">Cancel</button>
+    		</div>
+	</div>
+  </div>
+
+ <div id="newAccountDialog" class="dialog-container">
+    <div class="dialog">
+      <div class="dialog-title">New account</div>
+      <div class="dialog-body"> name:<input type="text" id="newAccountNameField"/></div>
+	  <div class="dialog-body"> start with: <button id='acSign' class='sign'>+</button>
+	  	<input type="number" id="newAccountBalanceField" /></div>
+      <div class="dialog-buttons">
+	  	<button id="buttonCancelNewAccount" class="button">Cancel</button>
+      	<button id="buttonAddNewAccount" class="button">Add</button>  
+      </div>
+    </div>
+  </div>
+  
+ <div id="txDialog" class="dialog-container">
+    <div class="dialog">
+    	<div class="dialog-body"><select id="txAccountChooser"></select> to/from <select id="txTransferChooser"></select><input type="checkbox" class="check" id="txCheckbox"/></div>
+	  <div class="dialog-body"><input type="date" id="txDateField"/> balance <span id='txBalance'>£.pp</span></div>
+	  <div class="dialog-body"><button id='txSign' class='sign'>+</button>&nbsp;<input type="number" id="txAmountField" /> monthly <input type="checkbox" class="check" id="txMonthly"/></div>
+      <div class="dialog-body"><input type="text" id="txTextField"/></div>
+	  <!--div class="dialog-body">balance <span id='txBalance'>£.pp</span></div-->
+      <div class="dialog-buttons">
+	  	<button id="buttonDeleteTx" class="deleteButton">Delete</button>
+	  	<button id="buttonCancelTx" class="button">Cancel</button>
+      	<button id="buttonSaveTx" class="button">Save</button>  
+      </div>
+	</div>
+</div>
+
+<div id="deleteDialog" class="dialog-container">
+  	<div class="dialog">
+		<div class="dialog-title">Delete</div>
+		<div  id="deleteText" class="dialog-body">text</div>
+		<div class="dialog-buttons">
+       	 	<button id="buttonDeleteConfirm" class="deleteButton">Delete</button>
+       		<button id="buttonCancelDelete" class="button">Cancel</button>
+		 </div>
+      </div>
+  </div>
+
+ <script src="moneyApp.js" async></script>
+
+</body>
+
+</html>
