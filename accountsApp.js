@@ -595,7 +595,7 @@ function notify(note) {
     				today=today.getDate();
     				// FIX INVALID DATES
     				var d=app.transactions[i].date;
-    				notify('date '+i+':'+d);
+    				notify('date of transaction '+i+':'+d);
     				if(Number.isNaN(Date.parse(d))) {
     					notify('FIX DATE');
     					d=Math.floor(months/12).toString()+"-";
