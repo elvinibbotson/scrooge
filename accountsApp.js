@@ -596,7 +596,7 @@ function notify(note) {
     				// FIX INVALID DATES
     				var d=app.transactions[i].date;
     				notify('tx '+i+' date '+d+' ('+Date.parse(d)+')');
-    				if(Date.parse(d)<1000) {
+    				if(Date.parse(d).isNaN) {
     					notify('FIX DATE');
     					d=Math.floor(months/12).toString()+"-";
     					months%=12;
