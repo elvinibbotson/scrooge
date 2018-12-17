@@ -606,6 +606,12 @@ function notify(note) {
     				var today=new Date();
     				var months=today.getFullYear()*12+today.getMonth()+1; // months count
     				today=today.getDate();
+    				
+    				// TEMPORARY FIX
+    				notify('tx date '+app.transactions[i].date);
+    				if(app.transactions[i].date==null) app.transactions.date='2018-11-17';
+    				
+    				
     				/*
     				if(app.transactions[i].monthly) {
     					console.log("monthly repeat check");
