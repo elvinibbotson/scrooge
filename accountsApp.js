@@ -18,16 +18,18 @@ function trim(text,len) {
 	return text;
 }
 
+var notifications=[];
+
 function notify(note) {
-		app.notifications.push(note);
-		while(app.notifications.length>25) notifications.shift();
+		notifications.push(note);
+		while(notifications.length>25) notifications.shift();
 		console.log(note);
 	}
 	
 	function showNotifications() {
 		var message="";
-		for(var i in app.notifications) {
-			message+=app.notifications[i]+"; ";
+		for(var i in notifications) {
+			message+=notifications[i]+"; ";
 		}
 		alert(message);
 		document.getElementById('menu').style.display='none';
@@ -36,8 +38,7 @@ function notify(note) {
 (function() {
  // 'use strict';
 	
-  // GLOBAL VARIABLES
-  var app = {
+    var app = {
 	db: null,
 	accounts: [],
 	accountNames: [],
@@ -49,8 +50,7 @@ function notify(note) {
 	listName: 'Accounts',
 	lastSave: null,
 	// transferChange: false,
-	months: "JanFebMarAprMayJunJulAugSepOctNovDec",
-	notifications: []
+	months: "JanFebMarAprMayJunJulAugSepOctNovDec"
   };
 
   // EVENT LISTENERS
