@@ -667,7 +667,7 @@ function notify(note) {
 							};
     					}
     				}
-g    				// END OF REPEAT TRANSACTION CODE
+	   				// END OF REPEAT TRANSACTION CODE
   	  				n=acNames.indexOf(app.transactions[i].account);
 	  				if(n<0) {
 	  					console.log("add account "+app.transactions[i].account);
