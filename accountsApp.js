@@ -596,7 +596,7 @@ function notify(note) {
     				// FIX INVALID DATES
     				var d=app.transactions[i].date;
     				notify(i+' date '+d);
-    				if(Date.parse(d).isNaN) {
+    				if(Number.isNaN(Date.parse(d))) {
     					notify('FIX DATE');
     					d=Math.floor(months/12).toString()+"-";
     					months%=12;
@@ -606,9 +606,9 @@ function notify(note) {
     					app.transactions[i].date=d;
     					var request=dbObjectStore.put(app.transactions[i]); // update transaction in database
 						request.onsuccess = function(event)  {
-							notify("transaction updated - monthly: false "+app.transactions[i].id);
+							notify("transaction update with date fixed "+app.transactions[i].id);
 						};
-						request.onerror = function(event) {notify("error updating transfer/monthly: "+request.error);};
+						request.onerror = function(event) {notify("error updating fixed date: "+request.error);};
     				}
     				
     				/*
