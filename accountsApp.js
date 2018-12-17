@@ -609,7 +609,7 @@ function notify(note) {
     				
     				// TEMPORARY FIX
     				notify('tx date '+app.transactions[i].date);
-    				if(app.transactions[i].date==null) app.transactions.date='2018-11-17';
+    				if(app.transactions[i].date==null) app.transactions[i].date='2018-11-17';
     				
     				
     				/*
