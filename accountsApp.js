@@ -632,7 +632,7 @@ function notify(note) {
     						tx.date+=txMonths.toString()+"-"+txDay.toString();
     						// tx.date=new Date(isoDate);
     						// tx.date+="-"+parseInt(txMonths%12)+"-"+txDay;
-    						notify("monthly transaction date: "+txDate+"; repeat date: "+tx.date);
+    						notify("monthly transaction date: "+txDate+"; repeat: "+tx.date);
     						tx.amount=app.transactions[i].amount;
     						tx.checked=false;
     						tx.text=app.transactions[i].text;
