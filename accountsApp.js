@@ -18,6 +18,21 @@ function trim(text,len) {
 	return text;
 }
 
+function notify(note) {
+		app.notifications.push(note);
+		while(app.notifications.length>25) notifications.shift();
+		console.log(note);
+	}
+	
+	function showNotifications() {
+		var message="";
+		for(var i in app.notifications) {
+			message+=app.notifications[i]+"; ";
+		}
+		alert(message);
+		document.getElementById('menu').style.display='none';
+	}
+
 (function() {
  // 'use strict';
 	
@@ -34,7 +49,8 @@ function trim(text,len) {
 	listName: 'Accounts',
 	lastSave: null,
 	// transferChange: false,
-	months: "JanFebMarAprMayJunJulAugSepOctNovDec"
+	months: "JanFebMarAprMayJunJulAugSepOctNovDec",
+	notifications: []
   };
 
   // EVENT LISTENERS
@@ -49,7 +65,7 @@ function trim(text,len) {
 	});
 	
   document.getElementById("import").addEventListener('click', function() { // IMPORT OPTION
-  		console.log("IMPORT");
+  		notify("IMPORT");
 		app.toggleDialog("importDialog", true);
   })
 	
@@ -60,24 +76,24 @@ function trim(text,len) {
   
   document.getElementById("fileChooser").addEventListener('change', function() { // IMPORT FILE
 	var file = id('fileChooser').files[0];
-	console.log("file: "+file+" name: "+file.name);
+	notify("file: "+file+" name: "+file.name);
 	var fileReader=new FileReader();
 	fileReader.addEventListener('load', function(evt) {
-		console.log("file read: "+evt.target.result);
+		notify("file read: "+evt.target.result);
 	  	var data=evt.target.result;
 		var json=JSON.parse(data);
-		console.log("json: "+json);
+		notify("json: "+json);
 		var transactions=json.transactions;
-		console.log(transactions.length+" transactions loaded");
+		notify(transactions.length+" transactions loaded");
 		var dbTransaction = app.db.transaction('transactions',"readwrite");
 		var dbObjectStore = dbTransaction.objectStore('transactions');
 		for(var i=0;i<transactions.length;i++) {
-			console.log("add "+transactions[i].text);
+			notify("add "+transactions[i].text);
 			var request = dbObjectStore.add(transactions[i]);
 			request.onsuccess = function(e) {
-				console.log(transactions.length+" transactions added to database");
+				notify(transactions.length+" transactions added to database");
 			};
-			request.onerror = function(e) {console.log("error adding transaction");};
+			request.onerror = function(e) {notify("error adding transaction");};
 		};
 		app.toggleDialog('importDialog',false);
 		alert("transactions imported - restart");
@@ -86,7 +102,7 @@ function trim(text,len) {
   },false);
   
   document.getElementById("export").addEventListener('click', function() { // EXPORT FILE
-  	console.log("EXPORT");
+  	notify("EXPORT");
 	var today= new Date();
 	var fileName = "money" + today.getDate();
 	var n = today.getMonth();
@@ -95,25 +111,25 @@ function trim(text,len) {
 	if(n<10) fileName+="0";
 	fileName += n + ".json";
 	var dbTransaction = app.db.transaction('transactions',"readwrite");
-	console.log("indexedDB transaction ready");
+	notify("indexedDB transaction ready");
 	var dbObjectStore = dbTransaction.objectStore('transactions');
-	console.log("indexedDB objectStore ready");
+	notify("indexedDB objectStore ready");
 	var request = dbObjectStore.openCursor();
 	var transactions=[];
 	var dbTransaction = app.db.transaction('transactions',"readwrite");
-	console.log("indexedDB transaction ready");
+	notify("indexedDB transaction ready");
 	var dbObjectStore = dbTransaction.objectStore('transactions');
-	console.log("indexedDB objectStore ready");
+	notify("indexedDB objectStore ready");
 	var request = dbObjectStore.openCursor();
 	request.onsuccess = function(event) {
 		var cursor = event.target.result;
     		if (cursor) {
 			transactions.push(cursor.value);
-			console.log("transaction "+cursor.key+", id: "+cursor.value.id+", date: "+cursor.value.date+", "+cursor.value.amount+" pence");
+			notify("transaction "+cursor.key+", id: "+cursor.value.id+", date: "+cursor.value.date+", "+cursor.value.amount+" pence");
 			cursor.continue();
     		}
 		else {
-			console.log(transactions.length+" transactions - sort and save");
+			notify(transactions.length+" transactions - sort and save");
     			transactions.sort(function(a,b) { return Date.parse(a.date)-Date.parse(b.date)}); //chronological order
 			var data={'transactions': transactions};
 			var json=JSON.stringify(data);
@@ -121,7 +137,7 @@ function trim(text,len) {
   			var a =document.createElement('a');
 			a.style.display='none';
     			var url = window.URL.createObjectURL(blob);
-			console.log("data ready to save: "+blob.size+" bytes");
+			notify("data ready to save: "+blob.size+" bytes");
    		 	a.href= url;
    		 	a.download = fileName;
     			document.body.appendChild(a);
@@ -132,6 +148,8 @@ function trim(text,len) {
 		}
 	}
   })
+  
+  document.getElementById('diagnostics').addEventListener('click', showNotifications);
     
   document.getElementById('buttonBack').addEventListener('click', function() { // BACK BUTTON: close open account
 	// return to accounts list
@@ -142,9 +160,9 @@ function trim(text,len) {
   });
 
   document.getElementById('buttonNew').addEventListener('click', function() { // NEW BUTTON: create new account or transaction
-	console.log("new");
+	notify("new");
     if(!app.account) { // no account open - show new account dialog
-		console.log("new account");
+		notify("new account");
 		app.toggleDialog('newAccountDialog',true);
 		id('newAccountNameField').value="";
 		id("newAccountBalanceField").value=null;
@@ -152,7 +170,7 @@ function trim(text,len) {
 	}
 	else { // if viewing account, show transaction dialog
 		app.toggleDialog('txDialog',true);
-		console.log("new transaction in "+app.account.name+" account");
+		notify("new transaction in "+app.account.name+" account");
 		app.txIndex=null;
 		app.tx={};
 		var n=0;
@@ -206,9 +224,9 @@ function trim(text,len) {
 		app.toggleDialog('newAccountDialog', false);
 		app.listAccounts();
 		var dbTransaction = app.db.transaction('transactions',"readwrite");
-		console.log("indexedDB transaction ready");
+		notify("indexedDB transaction ready");
 		var dbObjectStore = dbTransaction.objectStore('transactions');
-		console.log("indexedDB objectStore ready");
+		notify("indexedDB objectStore ready");
 		var request = dbObjectStore.add(tx);
 		request.onsuccess = function(event) {console.log("transaction added");};
 		request.onerror = function(event) {console.log("error adding new transaction");};
@@ -532,7 +550,7 @@ function trim(text,len) {
   }
     
   // START-UP CODE
-  console.log("START");
+  notify("START");
   
   var request = window.indexedDB.open("moneyDB");
 	request.onerror = function(event) {
@@ -541,14 +559,14 @@ function trim(text,len) {
 	request.onsuccess = function(event) {
 		// console.log("request: "+request);
 		app.db=event.target.result;
-		console.log("DB open");
+		notify("DB open");
 		var dbTransaction = app.db.transaction('transactions',"readwrite");
 		// was - var transaction = db.transaction('petrol',window.IDBTransaction.READ_WRITE);
-		console.log("indexedDB transaction ready");
+		notify("indexedDB transaction ready");
 		var dbObjectStore = dbTransaction.objectStore('transactions');
-		console.log("indexedDB objectStore ready");
+		notify("indexedDB objectStore ready");
 		app.transactions=[];
-		console.log("transactions array ready");
+		notify("transactions array ready");
 		var request = dbObjectStore.openCursor();
 		request.onsuccess = function(event) {
 			var cursor = event.target.result;
@@ -562,8 +580,8 @@ function trim(text,len) {
 					cursor.continue();
     			}
 			else {
-				console.log("No more entries!");
-				console.log(app.transactions.length+" transactions");
+				notify("No more entries!");
+				notify(app.transactions.length+" transactions");
     			app.transactions.sort(function(a,b) { return Date.parse(a.date)-Date.parse(b.date)}); //chronological order
    				app.accounts=[];
     			var acNames=[];
@@ -588,7 +606,7 @@ function trim(text,len) {
     				var months=today.getFullYear()*12+today.getMonth()+1; // months count
     				today=today.getDate();
     				if(app.transactions[i].monthly) {
-    					console.log("monthly repeat check");
+    					notify("monthly repeat check");
     					var txDate=app.transactions[i].date; // YYYY-MM-DD
     					var txMonths=parseInt(txDate.substr(0,4))*12+parseInt(txDate.substr(5,2)); // months count
     					var txDay=parseInt(txDate.substr(8,2));
@@ -648,14 +666,14 @@ function trim(text,len) {
 				for(n in acNames) {
   					app.accounts.push({name: acNames[n], balance: acBalances[n]});
   				}
-  				console.log(app.accounts.length+" accounts");
+  				notify(app.accounts.length+" accounts");
 				app.listAccounts();
 			};
 		};
 	};
 	request.onupgradeneeded = function(event) {
 		var dbObjectStore = event.currentTarget.result.createObjectStore("transactions", { keyPath: "id", autoIncrement: true });
-		console.log("jottings database ready");
+		console.log("database ready");
 	};
 
   // implement service worker if browser is PWA friendly
