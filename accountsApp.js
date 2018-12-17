@@ -626,7 +626,7 @@ function notify(note) {
 							request.onsuccess = function(event)  {
 								notify("transaction updated - monthly: false "+app.transactions[i].id);
 							};
-							request.onerror = function(event) {notify("error updating transfer/monthly");};
+							request.onerror = function(event) {notify("error updating transfer/monthly: "+request.error);};
     						var tx={}; // create repeat transaction
     						tx.account=app.transactions[i].account;
     						txMonths+=1; // next month (could be next year too)
@@ -661,7 +661,7 @@ function notify(note) {
 									}
 								};
 							};
-							request.onerror = function(event) {notify("error adding new repeat transaction");};
+							request.onerror = function(event) {notify("error adding new repeat transaction: "+request.error);};
     					}
     				}
     				// END OF REPEAT TRANSACTION CODE
