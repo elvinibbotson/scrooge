@@ -624,9 +624,10 @@ function notify(note) {
     						tx.account=app.transactions[i].account;
     						txMonths+=1; // next month (could be next year too)
     						// try new way of setting date
-    						var isoDate=Math.floor(txMonths/12).toString()+"-";
+    						// var isoDate=
+    						tx.date=Math.floor(txMonths/12).toString()+"-";
     						txMonths%=12;
-    						if(txMonths<10) tx.date='0'; // isoDate+="0";
+    						if(txMonths<10) tx.date+='0'; // isoDate+="0";
     						// isoDate+=
     						tx.date+=txMonths.toString()+"-"+txDay.toString();
     						// tx.date=new Date(isoDate);
