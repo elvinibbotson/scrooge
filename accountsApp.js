@@ -660,6 +660,7 @@ function notify(note) {
     				// END OF REPEAT TRANSACTION CODE
   	  				n=acNames.indexOf(app.transactions[i].account);
 	  				if(n<0) {
+	  					notify("add account "+app.transactions[i].account);
 	  	  				acNames.push(app.transactions[i].account);
 		  				acBalances.push(app.transactions[i].amount);
 	  				}
