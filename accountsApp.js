@@ -620,7 +620,7 @@ function notify(note) {
 							request.onsuccess = function(event)  {
 								notify("transaction updated - monthly: false "+app.transactions[i].id);
 							};
-							request.onerror = function(event) {notify("error initialising transfer/monthly");};
+							request.onerror = function(event) {notify("error updating transfer/monthly");};
     						var tx={}; // create repeat transaction
     						tx.account=app.transactions[i].account;
     						txMonths+=1; // next month (could be next year too)
