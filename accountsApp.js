@@ -626,9 +626,10 @@ function notify(note) {
     						// try new way of setting date
     						var isoDate=Math.floor(txMonths/12).toString()+"-";
     						txMonths%=12;
-    						if(txMonths<10) isoDate+="0";
-    						isoDate+=txMonths.toString()+"-"+txDay.toString();
-    						tx.date=new Date(isoDate);
+    						if(txMonths<10) tx.date='0'; // isoDate+="0";
+    						// isoDate+=
+    						tx.date+=txMonths.toString()+"-"+txDay.toString();
+    						// tx.date=new Date(isoDate);
     						// tx.date+="-"+parseInt(txMonths%12)+"-"+txDay;
     						notify("monthly transaction date: "+txDate+"; repeat date: "+tx.date);
     						tx.amount=app.transactions[i].amount;
