@@ -518,7 +518,7 @@ function notify(note) {
 	 var d="";
 	 var mon=0;
 	 var balance=0;
-	 console.log("list "+app.transactions.length+" transactions");
+	 notify("list "+app.transactions.length+" transactions");
 	 for(var i in app.transactions) {
 		balance+=app.transactions[i].amount;
 		app.transactions[i].balance=balance; // save balance after each transaction in account
@@ -529,6 +529,7 @@ function notify(note) {
 	  	listItem.classList.add('list-item');
 		tx=app.transactions[i];
 		d=tx.date;
+		notify("date: "+d);
 		mon=parseInt(d.substr(5,2))-1;
 		mon*=3;
 		d=d.substr(8,2)+" "+app.months.substr(mon,3); // +" "+d.substr(2,2);
