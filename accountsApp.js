@@ -610,9 +610,7 @@ function notify(note) {
 						};
 						request.onerror = function(event) {notify("error updating fixed date: "+request.error);};
     				}
-    				
-    				/*
-    				
+    				// END OF DATE FIX
     				if(app.transactions[i].monthly) {
     					console.log("monthly repeat check");
     					var txDate=app.transactions[i].date; // YYYY-MM-DD
@@ -665,10 +663,7 @@ function notify(note) {
 							request.onerror = function(event) {notify("error adding new repeat transaction: "+request.error);};
     					}
     				}
-    				
-    				*/
-    				
-    				// END OF REPEAT TRANSACTION CODE
+g    				// END OF REPEAT TRANSACTION CODE
   	  				n=acNames.indexOf(app.transactions[i].account);
 	  				if(n<0) {
 	  					console.log("add account "+app.transactions[i].account);
