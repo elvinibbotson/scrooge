@@ -606,7 +606,7 @@ function notify(note) {
     				var months=today.getFullYear()*12+today.getMonth()+1; // months count
     				today=today.getDate();
     				if(app.transactions[i].monthly) {
-    					notify("monthly repeat check");
+    					console.log("monthly repeat check");
     					var txDate=app.transactions[i].date; // YYYY-MM-DD
     					var txMonths=parseInt(txDate.substr(0,4))*12+parseInt(txDate.substr(5,2)); // months count
     					var txDay=parseInt(txDate.substr(8,2));
@@ -617,9 +617,9 @@ function notify(note) {
     						// put amended transaction in indexedDB
 							var request = dbObjectStore.put(app.transactions[i]); // update transaction in database
 							request.onsuccess = function(event)  {
-								console.log("transaction updated - monthly: false "+app.transactions[i].id);
+								notify("transaction updated - monthly: false "+app.transactions[i].id);
 							};
-							request.onerror = function(event) {console.log("error intialising transfer/monthly");};
+							request.onerror = function(event) {notify("error intialising transfer/monthly");};
     						var tx={}; // create repeat transaction
     						tx.account=app.transactions[i].account;
     						txMonths+=1; // next month (could be next year too)
@@ -630,7 +630,7 @@ function notify(note) {
     						isoDate+=txMonths.toString()+"-"+txDay.toString();
     						tx.date=new Date(isoDate);
     						// tx.date+="-"+parseInt(txMonths%12)+"-"+txDay;
-    						console.log("monthly transaction date: "+txDate+"; repeat date: "+tx.date);
+    						notify("monthly transaction date: "+txDate+"; repeat date: "+tx.date);
     						tx.amount=app.transactions[i].amount;
     						tx.checked=false;
     						tx.text=app.transactions[i].text;
@@ -648,7 +648,7 @@ function notify(note) {
 									tx.monthly=false;
 									request = dbObjectStore.add(tx);  // add new transaction to database
 									request.onsuccess = function(event) {
-										console.log("new repeated reciprocal transaction added");
+										notify("new repeated reciprocal transaction added");
 									}
 								};
 							};
