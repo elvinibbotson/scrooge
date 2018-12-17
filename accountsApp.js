@@ -612,11 +612,11 @@ function notify(note) {
     				}
     				// END OF DATE FIX
     				if(app.transactions[i].monthly) {
-    					console.log("monthly repeat check");
+    					notify("monthly repeat check");
     					var txDate=app.transactions[i].date; // YYYY-MM-DD
     					var txMonths=parseInt(txDate.substr(0,4))*12+parseInt(txDate.substr(5,2)); // months count
     					var txDay=txDate.substr(8,2);
-    					// console.log("months:"+months+" txMonths:"+txMonths+" monthly:"+app.transactions[i].monthly);
+    					notify("months:"+months+" txMonths:"+txMonths+" monthly:"+app.transactions[i].monthly);
     					if((((months-txMonths)>1))||(((months-txMonths)==1)&&(today>=txDay))) { // one month or more later
     						notify("add repeat transaction for "+app.transactions[i].text);
     						app.transactions[i].monthly=false; // cancel monthly repeat
@@ -625,7 +625,9 @@ function notify(note) {
 							request.onsuccess = function(event)  {
 								notify("transaction updated - monthly: false "+app.transactions[i].id);
 							};
-							request.onerror = function(event) {notify("error updating transfer/monthly: "+request.error);};
+							request.onerror = function(event) {
+								notify("error updating transfer/monthly: "+request.error);
+							};
     						var tx={}; // create repeat transaction
     						tx.account=app.transactions[i].account;
     						txMonths+=1; // next month (could be next year too)
@@ -660,7 +662,9 @@ function notify(note) {
 									}
 								};
 							};
-							request.onerror = function(event) {notify("error adding new repeat transaction: "+request.error);};
+							request.onerror = function(event) {
+								notify("error adding new repeat transaction: "+request.error);
+							};
     					}
     				}
 g    				// END OF REPEAT TRANSACTION CODE
