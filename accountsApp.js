@@ -589,34 +589,35 @@ function notify(note) {
     			var acBalances=[];
     			var n=0;
     			for(var i in app.transactions) { // build list of accounts
-    				// TEMPORARY FIX
-    				notify('tx date '+app.transactions[i].date);
-    				if(app.transactions[i].date==null) app.transactions[i].date='2018-11-17';
-    				
-    				
-	    			// TEMPORARY CODE TO INITIALISE .transfer AND .monthly PROPERTIES
-					// if(app.transactions[i].transfer==null) app.transactions[i].transfer="none";
-					// app.transactions[i].monthly=false;
-					// if(app.transactions[i].date==null) app.transactions[i].date=new Date().toISOString();
-					// put amended transaction in indexedDB
-					// var request = dbObjectStore.put(app.transactions[i]); // update transaction in database
-					// request.onsuccess = function(event)  {
-					//	console.log("transfer/monthly initialised for transaction "+app.transactions[i].id);
-					//};
-					//request.onerror = function(event) {console.log("error intialising transfer/monthly");};
-    				// END OF TEMPORARY CODE
-    				
     				// IF TRANSACTION .monthly IS TRUE AND DATE IS >= 1 MONTH BEFORE TODAY CREATE REPEAT TRANSACTION WITH .monthly TRUE AND SET .monthly TO FALSE
     				var today=new Date();
     				var months=today.getFullYear()*12+today.getMonth()+1; // months count
     				today=today.getDate();
-    				/*
+    				// FIX INVALID DATES
+    				var d=app.transactions[i].date;
+    				if(Date.parse(d)<1000) {
+    					notify('FIX DATE');
+    					d=Math.floor(months/12).toString()+"-";
+    					months%=12;
+    					if(months<10) d+='0';
+    					d+=months.toString()+"-"+today;
+    					notify('new date: '+d);
+    					app.transactions[i].date=d;
+    					var request=dbObjectStore.put(app.transactions[i]); // update transaction in database
+						request.onsuccess = function(event)  {
+							notify("transaction updated - monthly: false "+app.transactions[i].id);
+						};
+						request.onerror = function(event) {notify("error updating transfer/monthly: "+request.error);};
+    				}
+    				
+    				
+    				
     				if(app.transactions[i].monthly) {
     					console.log("monthly repeat check");
     					var txDate=app.transactions[i].date; // YYYY-MM-DD
     					var txMonths=parseInt(txDate.substr(0,4))*12+parseInt(txDate.substr(5,2)); // months count
-    					var txDay=parseInt(txDate.substr(8,2));
-    					console.log("months:"+months+" txMonths:"+txMonths+" monthly:"+app.transactions[i].monthly);
+    					var txDay=txDate.substr(8,2);
+    					// console.log("months:"+months+" txMonths:"+txMonths+" monthly:"+app.transactions[i].monthly);
     					if((((months-txMonths)>1))||(((months-txMonths)==1)&&(today>=txDay))) { // one month or more later
     						notify("add repeat transaction for "+app.transactions[i].text);
     						app.transactions[i].monthly=false; // cancel monthly repeat
@@ -635,7 +636,7 @@ function notify(note) {
     						txMonths%=12;
     						if(txMonths<10) tx.date+='0'; // isoDate+="0";
     						// isoDate+=
-    						tx.date+=txMonths.toString()+"-"+txDay.toString();
+    						tx.date+=txMonths.toString()+"-"+txDay;
     						// tx.date=new Date(isoDate);
     						// tx.date+="-"+parseInt(txMonths%12)+"-"+txDay;
     						notify("monthly transaction date: "+txDate+"; repeat: "+tx.date);
@@ -663,7 +664,6 @@ function notify(note) {
 							request.onerror = function(event) {notify("error adding new repeat transaction");};
     					}
     				}
-    				*/
     				// END OF REPEAT TRANSACTION CODE
   	  				n=acNames.indexOf(app.transactions[i].account);
 	  				if(n<0) {
