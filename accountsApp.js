@@ -612,14 +612,14 @@ function notify(note) {
     					var txDay=parseInt(txDate.substr(8,2));
     					console.log("months:"+months+" txMonths:"+txMonths+" monthly:"+app.transactions[i].monthly);
     					if((((months-txMonths)>1))||(((months-txMonths)==1)&&(today>=txDay))) { // one month or more later
-    						console.log("add repeat transaction for "+app.transactions[i].text);
+    						notify("add repeat transaction for "+app.transactions[i].text);
     						app.transactions[i].monthly=false; // cancel monthly repeat
     						// put amended transaction in indexedDB
-							var request = dbObjectStore.put(app.transactions[i]); // update transaction in database
+							var request=dbObjectStore.put(app.transactions[i]); // update transaction in database
 							request.onsuccess = function(event)  {
 								notify("transaction updated - monthly: false "+app.transactions[i].id);
 							};
-							request.onerror = function(event) {notify("error intialising transfer/monthly");};
+							request.onerror = function(event) {notify("error initialising transfer/monthly");};
     						var tx={}; // create repeat transaction
     						tx.account=app.transactions[i].account;
     						txMonths+=1; // next month (could be next year too)
@@ -654,7 +654,7 @@ function notify(note) {
 									}
 								};
 							};
-							request.onerror = function(event) {console.log("error adding new repeat transaction");};
+							request.onerror = function(event) {notify("error adding new repeat transaction");};
     					}
     				}
     				// END OF REPEAT TRANSACTION CODE
