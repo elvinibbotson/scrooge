@@ -610,7 +610,7 @@ function notify(note) {
 						request.onerror = function(event) {notify("error updating transfer/monthly: "+request.error);};
     				}
     				
-    				
+    				/*
     				
     				if(app.transactions[i].monthly) {
     					console.log("monthly repeat check");
@@ -664,6 +664,9 @@ function notify(note) {
 							request.onerror = function(event) {notify("error adding new repeat transaction: "+request.error);};
     					}
     				}
+    				
+    				*/
+    				
     				// END OF REPEAT TRANSACTION CODE
   	  				n=acNames.indexOf(app.transactions[i].account);
 	  				if(n<0) {
