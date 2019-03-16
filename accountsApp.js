@@ -350,6 +350,7 @@ function notify(note) {
 
   // SHOW/HIDE DIALOGS
   app.toggleDialog = function(d, visible) {
+	  id('buttonNew').style.display=(visible)? 'none':'block';
 	  if(d=='newAccountDialog') { // toggle new account dialog
 	  	 if (visible) {
       		id("newAccountDialog").classList.add('dialog-container--visible');
