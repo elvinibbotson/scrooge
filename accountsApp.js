@@ -573,10 +573,12 @@ function notify(note) {
 		request.onsuccess = function(event) {
 			var cursor = event.target.result;
     			if (cursor) {
-					if(cursor.value.repeat) { // temporary code to get rid of repeats
+    				/* temporary code to get rid of repeats
+					if(cursor.value.repeat) { 
 						console.log("remove repeat");
 						cursor.value.repeat=null;
 					}
+					*/
 					app.transactions.push(cursor.value);
 					// console.log("transaction "+cursor.key+", id: "+cursor.value.id+", date: "+cursor.value.date+", "+cursor.value.amount+" pence");
 					cursor.continue();
@@ -594,7 +596,7 @@ function notify(note) {
     				var today=new Date();
     				var months=today.getFullYear()*12+today.getMonth()+1; // months count
     				today=today.getDate();
-    				// FIX INVALID DATES
+    				/* FIX INVALID DATES
     				var d=app.transactions[i].date;
     				notify('date of transaction '+i+':'+d);
     				if(Number.isNaN(Date.parse(d))) {
@@ -612,6 +614,7 @@ function notify(note) {
 						request.onerror = function(event) {notify("error updating fixed date: "+request.error);};
     				}
     				// END OF DATE FIX
+    				*/
     				if(app.transactions[i].monthly) {
     					notify("monthly repeat check");
     					var txDate=app.transactions[i].date; // YYYY-MM-DD
@@ -646,11 +649,21 @@ function notify(note) {
     						tx.checked=false;
     						tx.text=app.transactions[i].text;
     						tx.transfer=app.transactions[i].transfer;
+    						var transferTX={};
+    						if(tx.transfer!="none") {
+    							transferTX.account=tx.transfer;
+    							transferTX.checked=false;
+    							transferTX.date=tx.date;
+    							transferTX.amount=-1*tx.amount;
+    							transferTX.text=tx.account;
+    							transferTX.monthly=false;
+    						}
     						tx.monthly=true;
     						// put new repeat transaction in indexedDB
     						request = dbObjectStore.add(tx);  // add new transaction to database
 							request.onsuccess = function(event) {
 								console.log("new repeat transaction added");
+								/* THIS APPROACH DIDN'T SEEM TO WORK
 								if(tx.transfer!='none') { // reciprocal transactions repeats too
 									tx.text=tx.account;
 									tx.account=tx.transfer;
@@ -661,11 +674,22 @@ function notify(note) {
 									request.onsuccess = function(event) {
 										notify("new repeated reciprocal transaction added");
 									}
+									*/
 								};
 							};
 							request.onerror = function(event) {
 								notify("error adding new repeat transaction: "+request.error);
 							};
+							// IF MONTHLY TRANSACTION IS TRANSFER CREATE RECIPROCAL TRANSACTION
+							if(transferTX.account) {
+								request=dbObjectStore.add(transferTX);
+								request.onsuccess = function(event) {
+									alert("reciprocal transaction created to match repeated transaction");
+								}
+								request.onerror = function(event) {
+									alert("error creating repeated reciprocal transaction");
+								}
+							}
     					}
     				}
 	   				// END OF REPEAT TRANSACTION CODE
