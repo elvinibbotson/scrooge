@@ -706,9 +706,9 @@ function notify(note) {
   				}
   				notify(app.accounts.length+" accounts");
 				app.listAccounts();
-			};
+			}
 		};
-	};
+	// };
 	request.onupgradeneeded = function(event) {
 		var dbObjectStore = event.currentTarget.result.createObjectStore("transactions", { keyPath: "id", autoIncrement: true });
 		console.log("database ready");
