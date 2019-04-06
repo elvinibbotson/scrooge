@@ -592,8 +592,7 @@ function notify(note) {
     			var acBalances=[];
     			var n=0;
     			for(var i in app.transactions) { // build list of accounts
-    				notify("transaction "+i+": "+app.transactions[i].account+" "+app.transactions[i].text);
-    				// IF TRANSACTION .monthly IS TRUE AND DATE IS >= 1 MONTH BEFORE TODAY CREATE REPEAT TRANSACTION WITH .monthly TRUE AND SET .monthly TO FALSE
+    				notify(i+": "+app.transactions[i].account+" "+app.transactions[i].text);
     				var today=new Date();
     				var months=today.getFullYear()*12+today.getMonth()+1; // months count
     				today=today.getDate();
@@ -679,10 +678,11 @@ function notify(note) {
 									}
 									*/
 								};
-							};
-							request.onerror = function(event) {
-								notify("error adding new repeat transaction: "+request.error);
-							};
+								request.onerror = function(event) {
+									notify("error adding new repeat transaction: "+request.error);
+								};
+							}
+							else notify("no repeat today");
 							// IF MONTHLY TRANSACTION IS TRANSFER CREATE RECIPROCAL TRANSACTION
 							if(transfer) {
 								request=dbObjectStore.add(transferTX);
@@ -693,6 +693,7 @@ function notify(note) {
 									alert("error creating repeated reciprocal transaction");
 								}
 							}
+							notify("next transaction");
     					}
     				}
 	   				// END OF REPEAT TRANSACTION CODE
