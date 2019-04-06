@@ -26,7 +26,7 @@ function notify(note) {
 		console.log(note);
 	}
 	
-	function showNotifications() {
+function showNotifications() {
 		var message="";
 		for(var i in notifications) {
 			message+=notifications[i]+"; ";
@@ -35,7 +35,7 @@ function notify(note) {
 		document.getElementById('menu').style.display='none';
 	}
 
-(function() {
+// function() {
  // 'use strict';
 	
     var app = {
@@ -52,6 +52,8 @@ function notify(note) {
 	// transferChange: false,
 	months: "JanFebMarAprMayJunJulAugSepOctNovDec"
   };
+  
+  console.log("set up");
 
   // EVENT LISTENERS
   document.getElementById("main").addEventListener('click', function() {
@@ -553,7 +555,6 @@ function notify(note) {
     
   // START-UP CODE
   notify("START");
-  
   var request = window.indexedDB.open("moneyDB");
 	request.onerror = function(event) {
 		alert("indexedDB error");
@@ -693,41 +694,39 @@ function notify(note) {
 									alert("error creating repeated reciprocal transaction");
 								}
 							}
-							notify("next transaction");
-    					}
+    					}  // END OF REPEAT TRANSACTION CODE
+    				// }
+  	  					n=acNames.indexOf(app.transactions[i].account);
+		  				if(n<0) {
+	  						notify("add account "+app.transactions[i].account);
+	  	  					acNames.push(app.transactions[i].account);
+		  					acBalances.push(app.transactions[i].amount);
+		 				}
+	  					else acBalances[n]+=app.transactions[i].amount;
+	  					notify("next transaction");
     				}
-	   				// END OF REPEAT TRANSACTION CODE
-  	  				n=acNames.indexOf(app.transactions[i].account);
-	  				if(n<0) {
-	  					notify("add account "+app.transactions[i].account);
-	  	  				acNames.push(app.transactions[i].account);
-		  				acBalances.push(app.transactions[i].amount);
-	  				}
-	  				else acBalances[n]+=app.transactions[i].amount;
-    			}
-				for(n in acNames) {
-  					app.accounts.push({name: acNames[n], balance: acBalances[n]});
-  				}
-  				notify(app.accounts.length+" accounts");
-				app.listAccounts();
-			}
-		};
+					for(n in acNames) {
+  						app.accounts.push({name: acNames[n], balance: acBalances[n]});
+  					}
+  					notify(app.accounts.length+" accounts");
+					app.listAccounts();
+				}
+			};
 	// };
-	request.onupgradeneeded = function(event) {
-		var dbObjectStore = event.currentTarget.result.createObjectStore("transactions", { keyPath: "id", autoIncrement: true });
-		console.log("database ready");
-	};
+			request.onupgradeneeded = function(event) {
+				var dbObjectStore = event.currentTarget.result.createObjectStore("transactions", { keyPath: "id", autoIncrement: true });
+				console.log("database ready");
+			};
 
-  // implement service worker if browser is PWA friendly
-  if (navigator.serviceWorker.controller) {
-  console.log('Active service worker found, no need to register')
-} else { // Register the ServiceWorker
-  navigator.serviceWorker.register('accountsSW.js', {
-			scope: '/Accounts/'
-		}).then(function(reg) {
-    console.log('Service worker has been registered for scope:'+ reg.scope);
-  });
-}
-  
-})();
+			// implement service worker if browser is PWA friendly
+			if (navigator.serviceWorker.controller) {
+				console.log('Active service worker found, no need to register')
+			}
+			else { // Register the ServiceWorker
+				navigator.serviceWorker.register('accountsSW.js', {scope: '/Accounts/'}).then(function(reg) {
+    			console.log('Service worker has been registered for scope:'+ reg.scope);
+			});
+		}
+	}
+// });
 
