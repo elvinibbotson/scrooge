@@ -618,6 +618,7 @@ function notify(note) {
     				*/
     				if(app.transactions[i].monthly) {
     					notify("monthly repeat check");
+    					var transfer=false;
     					var txDate=app.transactions[i].date; // YYYY-MM-DD
     					var txMonths=parseInt(txDate.substr(0,4))*12+parseInt(txDate.substr(5,2)); // months count
     					var txDay=txDate.substr(8,2);
@@ -652,6 +653,7 @@ function notify(note) {
     						tx.transfer=app.transactions[i].transfer;
     						var transferTX={};
     						if(tx.transfer!="none") {
+    							transfer=true;
     							transferTX.account=tx.transfer;
     							transferTX.checked=false;
     							transferTX.date=tx.date;
@@ -682,7 +684,7 @@ function notify(note) {
 								notify("error adding new repeat transaction: "+request.error);
 							};
 							// IF MONTHLY TRANSACTION IS TRANSFER CREATE RECIPROCAL TRANSACTION
-							if(transferTX.account) {
+							if(transfer) {
 								request=dbObjectStore.add(transferTX);
 								request.onsuccess = function(event) {
 									alert("reciprocal transaction created to match repeated transaction");
