@@ -592,6 +592,7 @@ function notify(note) {
     			var acBalances=[];
     			var n=0;
     			for(var i in app.transactions) { // build list of accounts
+    				notify("transaction "+i+": "+app.transactions[i].account+" "+app.transactions[i].text);
     				// IF TRANSACTION .monthly IS TRUE AND DATE IS >= 1 MONTH BEFORE TODAY CREATE REPEAT TRANSACTION WITH .monthly TRUE AND SET .monthly TO FALSE
     				var today=new Date();
     				var months=today.getFullYear()*12+today.getMonth()+1; // months count
