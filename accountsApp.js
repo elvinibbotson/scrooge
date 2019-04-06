@@ -622,7 +622,7 @@ function notify(note) {
     					var txDate=app.transactions[i].date; // YYYY-MM-DD
     					var txMonths=parseInt(txDate.substr(0,4))*12+parseInt(txDate.substr(5,2)); // months count
     					var txDay=txDate.substr(8,2);
-    					notify("months:"+months+" txMonths:"+txMonths+" monthly:"+app.transactions[i].monthly);
+    					notify("months:"+months+" transfer:"+transfer+" monthly:"+app.transactions[i].monthly);
     					if((((months-txMonths)>1))||(((months-txMonths)==1)&&(today>=txDay))) { // one month or more later
     						notify("add repeat transaction for "+app.transactions[i].text);
     						app.transactions[i].monthly=false; // cancel monthly repeat
@@ -665,7 +665,7 @@ function notify(note) {
     						// put new repeat transaction in indexedDB
     						request = dbObjectStore.add(tx);  // add new transaction to database
 							request.onsuccess = function(event) {
-								console.log("new repeat transaction added");
+								notify("new repeat transaction added");
 								/* THIS APPROACH DIDN'T SEEM TO WORK
 								if(tx.transfer!='none') { // reciprocal transactions repeats too
 									tx.text=tx.account;
