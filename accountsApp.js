@@ -410,8 +410,10 @@ function showNotifications() {
 		id('txTextField').disabled=true;
 		id('txTransferChooser').disabled=true;
 		id('txMonthly').disabled=true;
-		id('buttonDeleteTx').style.color='gray';
-		id('buttonDeleteTx').disabled=true;
+		if(app.transactions.length>1) { // can only delete B/F if it is only transaction - effectively deletes account
+		    id('buttonDeleteTx').style.color='gray';
+		    id('buttonDeleteTx').disabled=true;
+		}
 	}
 	else {
 		console.log("full editing");
