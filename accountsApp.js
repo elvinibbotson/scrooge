@@ -638,6 +638,7 @@ function showNotifications() {
 							};
     						var tx={}; // create repeat transaction
     						tx.account=app.transactions[i].account;
+    						notify('>> repeat tx account: '+tx.account);
     						txMonths+=1; // next month (could be next year too)
     						// try new way of setting date
     						// var isoDate=
@@ -646,6 +647,7 @@ function showNotifications() {
     						if(txMonths<10) tx.date+='0'; // isoDate+="0";
     						// isoDate+=
     						tx.date+=txMonths.toString()+"-"+txDay;
+    						notify('>> repeat tx date: '+tx.date);
     						// tx.date=new Date(isoDate);
     						// tx.date+="-"+parseInt(txMonths%12)+"-"+txDay;
     						notify("monthly transaction date: "+txDate+"; repeat: "+tx.date);
@@ -667,7 +669,7 @@ function showNotifications() {
     						// put new repeat transaction in indexedDB
     						request = dbObjectStore.add(tx);  // add new transaction to database
 							request.onsuccess = function(event) {
-								notify("new repeat transaction added");
+								notify(">> repeat transaction added");
 								/* THIS APPROACH DIDN'T SEEM TO WORK
 								if(tx.transfer!='none') { // reciprocal transactions repeats too
 									tx.text=tx.account;
