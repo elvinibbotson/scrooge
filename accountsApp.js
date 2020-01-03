@@ -595,7 +595,7 @@ function showNotifications() {
     			var acBalances=[];
     			var n=0;
     			for(var i in app.transactions) { // build list of accounts
-    				notify(i+": "+app.transactions[i].account+" "+app.transactions[i].text);
+    				// notify(i+": "+app.transactions[i].account+" "+app.transactions[i].text);
     				var today=new Date();
     				var months=today.getFullYear()*12+today.getMonth()+1; // months count
     				today=today.getDate();
@@ -624,17 +624,17 @@ function showNotifications() {
     					var txDate=app.transactions[i].date; // YYYY-MM-DD
     					var txMonths=parseInt(txDate.substr(0,4))*12+parseInt(txDate.substr(5,2)); // months count
     					var txDay=txDate.substr(8,2);
-    					notify("months:"+months+" transfer:"+transfer+" monthly:"+app.transactions[i].monthly);
+    					// notify("months:"+months+" transfer:"+transfer+" monthly:"+app.transactions[i].monthly);
     					if((((months-txMonths)>1))||(((months-txMonths)==1)&&(today>=txDay))) { // one month or more later
-    						notify("add repeat transaction for "+app.transactions[i].text);
+    						notify(">> add repeat transaction for "+app.transactions[i].text);
     						app.transactions[i].monthly=false; // cancel monthly repeat
     						// put amended transaction in indexedDB
 							var request=dbObjectStore.put(app.transactions[i]); // update transaction in database
 							request.onsuccess = function(event)  {
-								notify("transaction updated - monthly: false "+app.transactions[i].id);
+								notify(">> transaction updated");
 							};
 							request.onerror = function(event) {
-								notify("error updating transfer/monthly: "+request.error);
+								notify(">> error updating transfer/monthly: "+request.error);
 							};
     						var tx={}; // create repeat transaction
     						tx.account=app.transactions[i].account;
@@ -650,7 +650,7 @@ function showNotifications() {
     						notify('>> repeat tx date: '+tx.date);
     						// tx.date=new Date(isoDate);
     						// tx.date+="-"+parseInt(txMonths%12)+"-"+txDay;
-    						notify("monthly transaction date: "+txDate+"; repeat: "+tx.date);
+    						notify(">> monthly transaction date: "+txDate+"; repeat: "+tx.date);
     						tx.amount=app.transactions[i].amount;
     						tx.checked=false;
     						tx.text=app.transactions[i].text;
@@ -684,10 +684,10 @@ function showNotifications() {
 									*/
 								};
 								request.onerror = function(event) {
-									notify("error adding new repeat transaction: "+request.error);
+									notify(">> error adding new repeat transaction: "+request.error);
 								};
 							}
-							else notify("no repeat today");
+							// else notify("no repeat today");
 							// IF MONTHLY TRANSACTION IS TRANSFER CREATE RECIPROCAL TRANSACTION
 							if(transfer) {
 								request=dbObjectStore.add(transferTX);
@@ -707,7 +707,7 @@ function showNotifications() {
 		  					acBalances.push(app.transactions[i].amount);
 		 				}
 	  					else acBalances[n]+=app.transactions[i].amount;
-	  					notify("next transaction");
+	  					// notify("next transaction");
     				}
 					for(n in acNames) {
   						app.accounts.push({name: acNames[n], balance: acBalances[n]});
