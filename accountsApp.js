@@ -81,12 +81,12 @@ function showNotifications() {
 	notify("file: "+file+" name: "+file.name);
 	var fileReader=new FileReader();
 	fileReader.addEventListener('load', function(evt) {
-		notify("file read: "+evt.target.result);
+		notify("file read");
 	  	var data=evt.target.result;
 		var json=JSON.parse(data);
-		notify("json: "+json);
+		notify("json available");
 		var transactions=json.transactions;
-		notify(transactions.length+" transactions loaded");
+		notify(transactions.length+" transactions");
 		var dbTransaction = app.db.transaction('transactions',"readwrite");
 		var dbObjectStore = dbTransaction.objectStore('transactions');
 		for(var i=0;i<transactions.length;i++) {
@@ -475,7 +475,7 @@ function showNotifications() {
   // OPEN ACCOUNT
   app.openAccount = function() {
   	app.account=app.accounts[app.acIndex];
-	console.log("open account #"+app.acIndex+": "+app.account.name);
+	notify("open account #"+app.acIndex+": "+app.account.name);
 	app.transactions = [];
 	var dbTransaction = app.db.transaction('transactions',"readwrite");
 	console.log("indexedDB transaction ready");
@@ -716,10 +716,9 @@ function showNotifications() {
 					app.listAccounts();
 				}
 			};
-	// };
 			request.onupgradeneeded = function(event) {
 				var dbObjectStore = event.currentTarget.result.createObjectStore("transactions", { keyPath: "id", autoIncrement: true });
-				console.log("database ready");
+				notify("database ready");
 			};
 
 			// implement service worker if browser is PWA friendly
@@ -732,5 +731,4 @@ function showNotifications() {
 			});
 		}
 	}
-// });
 
