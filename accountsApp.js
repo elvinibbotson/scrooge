@@ -558,18 +558,18 @@ function showNotifications() {
   // START-UP CODE
   notify("START");
   var request = window.indexedDB.open("moneyDB");
-	request.onerror = function(event) {
+    request.onerror = function(event) {
 		alert("indexedDB error");
 	};
+	
 	request.onsuccess = function(event) {
 		// console.log("request: "+request);
 		app.db=event.target.result;
-		notify("DB open");
+		alert("DB open");
 		var dbTransaction = app.db.transaction('transactions',"readwrite");
-		// was - var transaction = db.transaction('petrol',window.IDBTransaction.READ_WRITE);
-		notify("indexedDB transaction ready");
+		alert("indexedDB transaction ready");
 		var dbObjectStore = dbTransaction.objectStore('transactions');
-		notify("indexedDB objectStore ready");
+		alert("indexedDB objectStore ready");
 		app.transactions=[];
 		notify("transactions array ready");
 		var request = dbObjectStore.openCursor();
@@ -588,7 +588,7 @@ function showNotifications() {
     			}
 			else {
 				notify("No more entries!");
-				notify(app.transactions.length+" transactions");
+				alert(app.transactions.length+" transactions");
     			app.transactions.sort(function(a,b) { return Date.parse(a.date)-Date.parse(b.date)}); //chronological order
    				app.accounts=[];
     			var acNames=[];
@@ -718,7 +718,7 @@ function showNotifications() {
 			};
 			request.onupgradeneeded = function(event) {
 				var dbObjectStore = event.currentTarget.result.createObjectStore("transactions", { keyPath: "id", autoIncrement: true });
-				notify("database ready");
+				alert("database ready");
 			};
 
 			// implement service worker if browser is PWA friendly
@@ -727,8 +727,8 @@ function showNotifications() {
 			}
 			else { // Register the ServiceWorker
 				navigator.serviceWorker.register('accountsSW.js', {scope: '/Accounts/'}).then(function(reg) {
-    			console.log('Service worker has been registered for scope:'+ reg.scope);
-			});
-		}
-	}
+    			    console.log('Service worker has been registered for scope:'+ reg.scope);
+			    });
+		    }
+	    }
 
