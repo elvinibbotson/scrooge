@@ -488,7 +488,7 @@ function openAccount() {
 					}
 					request.onerror = function(event) {console.log("error deleting earliest transaction");};
 	  			}
-				else app.buildTransactionsList();
+				else buildTransactionsList();
 			}
 		}
 }
