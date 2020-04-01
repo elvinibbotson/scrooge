@@ -239,7 +239,7 @@ id('buttonSaveTx').addEventListener('click', function() {
 	tx.text=id('txTextField').value;
 	var i=id('txTransferChooser').selectedIndex;
 	var transfer=id('txTransferChooser').options[i].text;
-	console.log("transfer change:"+transferChange+" currently:"+tx.transfer+" change(?) to:"+transfer);
+	console.log("transfer change to:"+transfer);
 	if((transfer=="none")||(transfer==tx.transfer)) transfer=null; // (usually) no need to create reciprocal transaction
 	tx.transfer=id('txTransferChooser').options[i].text;
 	tx.monthly=id('txMonthly').checked;
@@ -527,7 +527,7 @@ function buildTransactionsList() {
 		listItem.addEventListener('click', function(){txIndex=this.index; openTx();});
 		id('list').appendChild(listItem);
 	 }
-	 accounts[app.acIndex].balance=balance;
+	 accounts[acIndex].balance=balance;
 	 html=trim(account.name,12)+" <i>";
 	 if(balance<0) html+=" -";
 	 else html+=" ";
