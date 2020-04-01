@@ -63,20 +63,20 @@ id("fileChooser").addEventListener('change', function() {
 	  	var data=evt.target.result;
 		var json=JSON.parse(data);
 		console.log("json available");
-		var transactions=json.transactions;
-		console.log(transactions.length+" transactions");
+		var logs=json.logs;
+		console.log(logs.length+" logs");
 		var dbTransaction=db.transaction('logs',"readwrite");
 		var dbObjectStore=dbTransaction.objectStore('logs');
-		for(var i=0;i<transactions.length;i++) {
-			console.log("add "+transactions[i].text);
-			var request=dbObjectStore.add(transactions[i]);
+		for(var i=0;i<logs.length;i++) {
+			console.log("add "+logs[i].text);
+			var request=dbObjectStore.add(logs[i]);
 			request.onsuccess=function(e) {
-				console.log(transactions.length+" transactions added to database");
+				console.log(logs.length+" logs added to database");
 			};
-			request.onerror=function(e) {console.log("error adding transaction");};
+			request.onerror=function(e) {console.log("error adding log");};
 		};
 		toggleDialog('importDialog',false);
-		alert("transactions imported - restart");
+		alert("transaction logs imported - restart");
   	});
   	fileReader.readAsText(file);
 })
@@ -91,7 +91,7 @@ id("export").addEventListener('click', function() {
 	n=today.getFullYear()%100;
 	if(n<10) fileName+="0";
 	fileName+=n+".json";
-	var transactions=[];
+	var logs=[];
 	var dbTransaction=db.transaction('logs',"readwrite");
 	console.log("indexedDB transaction ready");
 	var dbObjectStore=dbTransaction.objectStore('logs');
@@ -100,14 +100,14 @@ id("export").addEventListener('click', function() {
 	request.onsuccess=function(event) {
 		var cursor=event.target.result;
     	if(cursor) {
-			transactions.push(cursor.value);
+			logs.push(cursor.value);
 			console.log("transaction "+cursor.key+", id: "+cursor.value.id+", date: "+cursor.value.date+", "+cursor.value.amount+" pence");
 			cursor.continue();
     	}
 		else {
-			console.log(transactions.length+" transactions - sort and save");
-    		transactions.sort(function(a,b) {return Date.parse(a.date)-Date.parse(b.date)}); //chronological order
-			var data={'transactions': transactions};
+			console.log(logs.length+" transaction logs - sort and save");
+    		logs.sort(function(a,b) {return Date.parse(a.date)-Date.parse(b.date)}); //chronological order
+			var data={'logs': logs};
 			var json=JSON.stringify(data);
 			var blob=new Blob([json],{type:"data:application/json"});
   			var a=document.createElement('a');
@@ -636,7 +636,7 @@ request.onsuccess=function(event) {
 						}
 					}
     			}  // END OF REPEAT TRANSACTION CODE
-    			n=acNames.indexOf(app.transactions[i].account);
+    			n=acNames.indexOf(transactions[i].account);
 		  		if(n<0) {
 	  				console.log("add account "+transactions[i].account);
 	   				acNames.push(transactions[i].account);
@@ -657,7 +657,7 @@ if(navigator.serviceWorker.controller) {
 	console.log('Active service worker found, no need to register')
 }
 else { // Register the ServiceWorker
-	navigator.serviceWorker.register('accountsSW.js', {scope: '/Money/'}).then(function(reg) {
+	navigator.serviceWorker.register('moneySW.js', {scope: '/Money/'}).then(function(reg) {
 	    console.log('Service worker has been registered for scope:'+ reg.scope);
 	});
 }
