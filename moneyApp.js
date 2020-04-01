@@ -127,6 +127,7 @@ id("export").addEventListener('click', function() {
 // BACK BUTTON: close open account
 id('buttonBack').addEventListener('click', function() {
 	// return to accounts list
+	console.log("BACK");
 	account=null;
 	id("buttonBack").style.display="none";
 	toggleDialog('txDialog',false);
