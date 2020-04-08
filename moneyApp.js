@@ -506,13 +506,8 @@ id('buttonCancelImport').addEventListener('click', function() {
 
 // BACKUP FILE
 function backup() {
-	var today=new Date();
-	var fileName="money"+today.getDate();
-	var n=today.getMonth();
-	fileName+=app.months.substr(n*3,3);
-	n=today.getFullYear()%100;
-	if(n<10) fileName+="0";
-	fileName+=n+".json";
+	var fileName="money.json";
+ 	fileName+=months.substr(n*3,3);
 	var logs=[];
 	var dbTransaction=db.transaction('logs',"readwrite");
 	console.log("indexedDB transaction ready");
