@@ -29,30 +29,6 @@ var listName='Accounts';
 var lastSave=null;
 var months="JanFebMarAprMayJunJulAugSepOctNovDec";
 
-// EVENT LISTENERS
-id("main").addEventListener('click', function() {
-    id("menu").style.display="none";
-})
-
-// MENU BUTTON ******** DELETE THESE 3 BITS WHEN AUTOSAVe WORKS *********
-id('buttonMenu').addEventListener('click', function() {
-	var display = id("menu").style.display;
-	if(display == "block") id("menu").style.display = "none";
-	else id("menu").style.display = "block";
-});
-
-// IMPORT
-id("import").addEventListener('click', function() {
-  	console.log("IMPORT");
-	id("menu").style.display="none";
-})
-
-// EXPORT FILE
-id("export").addEventListener('click', function() {
-  	console.log("EXPORT");
-  	id("menu").style.display="none";
-})
-
 // BACK BUTTON: close open account
 id('buttonBack').addEventListener('click', function() {
 	// return to accounts list
@@ -507,12 +483,11 @@ id('buttonCancelImport').addEventListener('click', function() {
 // BACKUP FILE
 function backup() {
 	var fileName="money.json";
- 	fileName+=months.substr(n*3,3);
 	var logs=[];
 	var dbTransaction=db.transaction('logs',"readwrite");
 	console.log("indexedDB transaction ready");
 	var dbObjectStore=dbTransaction.objectStore('logs');
-	consol.log("indexedDB objectStore ready");
+	console.log("indexedDB objectStore ready");
 	var request=dbObjectStore.openCursor();
 	request.onsuccess=function(event) {
 		var cursor=event.target.result;
@@ -530,13 +505,13 @@ function backup() {
   			var a=document.createElement('a');
 			a.style.display='none';
     		var url = window.URL.createObjectURL(blob);
-			notify("data ready to save: "+blob.size+" bytes");
+			console.log("data ready to save: "+blob.size+" bytes");
    		 	a.href= url;
    		 	a.download = fileName;
     		document.body.appendChild(a);
     		a.click();
 			alert(fileName+" saved to downloads folder");
-			lastSave=Date(now)/86400000;
+			lastSave=Date.now()/86400000;
 			window.localStorage.setItem('saveDate',lastSave); // remember day saved
 		}
 	}
@@ -545,6 +520,7 @@ function backup() {
 // START-UP CODE
 console.log("START");
 lastSave=window.localStorage.getItem('saveDate'); // date of last backup
+console.log("last save day: "+lastSave);
 var request=window.indexedDB.open("transactionsDB");
 request.onerror=function(event) {
 	alert("indexedDB error");
@@ -659,7 +635,7 @@ request.onsuccess=function(event) {
   				accounts.push({name: acNames[n], balance: acBalances[n]});
   			}
   			console.log(accounts.length+" accounts");
-  			if(((Date.now()-lastSave)/86400000)>1) { // >1 day since last backup
+  			if((Date.now()/86400000-lastSave)>1) { // >1 day since last backup
   			    console.log("BACKUP");
   			    backup();
   			}
