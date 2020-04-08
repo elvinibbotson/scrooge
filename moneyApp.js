@@ -51,7 +51,7 @@ id("import").addEventListener('click', function() {
 id("export").addEventListener('click', function() {
   	console.log("EXPORT");
   	id("menu").style.display="none";
-}
+})
 
 // BACK BUTTON: close open account
 id('buttonBack').addEventListener('click', function() {
@@ -465,6 +465,87 @@ function buildTransactionsList() {
 	 id('heading').innerHTML=html;
 	 id("buttonBack").style.display="block";
 }
+
+// RESTORE FILE
+function restore() {
+    toggleDialog("importDialog", true);
+}
+
+// IMPORT FILE
+id("fileChooser").addEventListener('change', function() {
+	var file=id('fileChooser').files[0];
+	console.log("file: "+file+" name: "+file.name);
+	var fileReader=new FileReader();
+	fileReader.addEventListener('load', function(evt) {
+		console.log("file read");
+	  	var data=evt.target.result;
+		var json=JSON.parse(data);
+		console.log("json available");
+		var logs=json.logs;
+		console.log(logs.length+" logs");
+		var dbTransaction=db.transaction('logs',"readwrite");
+		var dbObjectStore=dbTransaction.objectStore('logs');
+		for(var i=0;i<logs.length;i++) {
+			console.log("add "+logs[i].text);
+			var request=dbObjectStore.add(logs[i]);
+			request.onsuccess=function(e) {
+				console.log(logs.length+" logs added to database");
+			};
+			request.onerror=function(e) {console.log("error adding log");};
+		};
+		toggleDialog('importDialog',false);
+		alert("transaction logs imported - restart");
+  	});
+  	fileReader.readAsText(file);
+})
+
+// CANCEL IMPORT
+id('buttonCancelImport').addEventListener('click', function() {
+    toggleDialog('importDialog', false);
+ });
+
+// BACKUP FILE
+function backup() {
+	var today=new Date();
+	var fileName="money"+today.getDate();
+	var n=today.getMonth();
+	fileName+=app.months.substr(n*3,3);
+	n=today.getFullYear()%100;
+	if(n<10) fileName+="0";
+	fileName+=n+".json";
+	var logs=[];
+	var dbTransaction=db.transaction('logs',"readwrite");
+	console.log("indexedDB transaction ready");
+	var dbObjectStore=dbTransaction.objectStore('logs');
+	consol.log("indexedDB objectStore ready");
+	var request=dbObjectStore.openCursor();
+	request.onsuccess=function(event) {
+		var cursor=event.target.result;
+    	if(cursor) {
+			logs.push(cursor.value);
+			console.log("transaction "+cursor.key+", id: "+cursor.value.id+", date: "+cursor.value.date+", "+cursor.value.amount+" pence");
+			cursor.continue();
+    	}
+		else {
+			console.log(logs.length+" transaction logs - sort and save");
+    		logs.sort(function(a,b) {return Date.parse(a.date)-Date.parse(b.date)}); //chronological order
+			var data={'logs': logs};
+			var json=JSON.stringify(data);
+			var blob=new Blob([json],{type:"data:application/json"});
+  			var a=document.createElement('a');
+			a.style.display='none';
+    		var url = window.URL.createObjectURL(blob);
+			notify("data ready to save: "+blob.size+" bytes");
+   		 	a.href= url;
+   		 	a.download = fileName;
+    		document.body.appendChild(a);
+    		a.click();
+			alert(fileName+" saved to downloads folder");
+			lastSave=Date(now)/86400000;
+			window.localStorage.setItem('saveDate',lastSave); // remember day saved
+		}
+	}
+}
     
 // START-UP CODE
 console.log("START");
@@ -585,7 +666,7 @@ request.onsuccess=function(event) {
   			console.log(accounts.length+" accounts");
   			if(((Date.now()-lastSave)/86400000)>1) { // >1 day since last backup
   			    console.log("BACKUP");
-  			    export();
+  			    backup();
   			}
 			listAccounts();
 		}
@@ -600,84 +681,4 @@ else { // Register the ServiceWorker
 	    console.log('Service worker has been registered for scope:'+ reg.scope);
 	});
 }
-
-// IMPORT FILE
-function import() {
-    toggleDialog("importDialog", true);
-}
-
-id("fileChooser").addEventListener('change', function() {
-	var file=id('fileChooser').files[0];
-	console.log("file: "+file+" name: "+file.name);
-	var fileReader=new FileReader();
-	fileReader.addEventListener('load', function(evt) {
-		console.log("file read");
-	  	var data=evt.target.result;
-		var json=JSON.parse(data);
-		console.log("json available");
-		var logs=json.logs;
-		console.log(logs.length+" logs");
-		var dbTransaction=db.transaction('logs',"readwrite");
-		var dbObjectStore=dbTransaction.objectStore('logs');
-		for(var i=0;i<logs.length;i++) {
-			console.log("add "+logs[i].text);
-			var request=dbObjectStore.add(logs[i]);
-			request.onsuccess=function(e) {
-				console.log(logs.length+" logs added to database");
-			};
-			request.onerror=function(e) {console.log("error adding log");};
-		};
-		toggleDialog('importDialog',false);
-		alert("transaction logs imported - restart");
-  	});
-  	fileReader.readAsText(file);
-})
-
-// CANCEL IMPORT
-id('buttonCancelImport').addEventListener('click', function() {
-    toggleDialog('importDialog', false);
- });
-
-// EXPORT FILE
-function export() {
-	var today=new Date();
-	var fileName="money"+today.getDate();
-	var n=today.getMonth();
-	fileName+=app.months.substr(n*3,3);
-	n=today.getFullYear()%100;
-	if(n<10) fileName+="0";
-	fileName+=n+".json";
-	var logs=[];
-	var dbTransaction=db.transaction('logs',"readwrite");
-	console.log("indexedDB transaction ready");
-	var dbObjectStore=dbTransaction.objectStore('logs');
-	consol.log("indexedDB objectStore ready");
-	var request=dbObjectStore.openCursor();
-	request.onsuccess=function(event) {
-		var cursor=event.target.result;
-    	if(cursor) {
-			logs.push(cursor.value);
-			console.log("transaction "+cursor.key+", id: "+cursor.value.id+", date: "+cursor.value.date+", "+cursor.value.amount+" pence");
-			cursor.continue();
-    	}
-		else {
-			console.log(logs.length+" transaction logs - sort and save");
-    		logs.sort(function(a,b) {return Date.parse(a.date)-Date.parse(b.date)}); //chronological order
-			var data={'logs': logs};
-			var json=JSON.stringify(data);
-			var blob=new Blob([json],{type:"data:application/json"});
-  			var a=document.createElement('a');
-			a.style.display='none';
-    		var url = window.URL.createObjectURL(blob);
-			notify("data ready to save: "+blob.size+" bytes");
-   		 	a.href= url;
-   		 	a.download = fileName;
-    		document.body.appendChild(a);
-    		a.click();
-			alert(fileName+" saved to downloads folder");
-			lastSave=Date(now)/86400000;
-			window.localStorage.setItem('saveDate',lastSave); // remember day saved
-		}
-	}
-})
 
