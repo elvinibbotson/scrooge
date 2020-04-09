@@ -353,8 +353,13 @@ function listAccounts() {
 	  	}
 	  	console.log("transfer option 0: "+id('txTransferChooser').options[0].text);
 		html="Accounts <i>"+pp(grandTotal)+"</i>";
-	  }
-	  id('heading').innerHTML=html;
+	}
+	id('heading').innerHTML=html;
+	var today=new Date();
+	if(today.getMonth()!=lastSave) { // backup every month
+        console.log("BACKUP");
+        backup();
+    }
 }
   
 // OPEN ACCOUNT
@@ -511,8 +516,9 @@ function backup() {
     		document.body.appendChild(a);
     		a.click();
 			alert(fileName+" saved to downloads folder");
-			lastSave=Date.now()/86400000;
-			window.localStorage.setItem('saveDate',lastSave); // remember day saved
+			var today=new Date();
+			lastSave=today.getMonth();
+			window.localStorage.setItem('saveDate',lastSave); // remember month saved
 		}
 	}
 }
@@ -635,10 +641,6 @@ request.onsuccess=function(event) {
   				accounts.push({name: acNames[n], balance: acBalances[n]});
   			}
   			console.log(accounts.length+" accounts");
-  			if((Date.now()/86400000-lastSave)>1) { // >1 day since last backup
-  			    console.log("BACKUP");
-  			    backup();
-  			}
 			listAccounts();
 		}
 	}
