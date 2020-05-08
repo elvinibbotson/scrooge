@@ -295,7 +295,7 @@ function openTx() {
 	id('txAmountField').value=pp(tx.amount);
 	id('txTextField').value=tx.text;
 	id('txBalance').innerHTML=pp(tx.balance);
-	id('txBalance').style.color=(tx.balance<0)?'red':'white';
+	id('txBalance').style.color=(tx.balance<0)?'yellow':'white';
 	var i=0;
 	while(id('txTransferChooser').options[i].text!=tx.transfer) i++;
 	id('txTransferChooser').selectedIndex=i;
@@ -311,7 +311,6 @@ function openTx() {
 		id('txTransferChooser').disabled=true;
 		id('txMonthly').disabled=true;
 		if(transactions.length>1) { // can only delete B/F if it is only transaction - effectively deletes account
-		    id('buttonDeleteTx').style.color='gray';
 		    id('buttonDeleteTx').disabled=true;
 		}
 	}
@@ -323,7 +322,6 @@ function openTx() {
 		id('txTransferChooser').disabled=false;
 		id('txMonthly').disabled=false;
 		id('buttonDeleteTx').disabled=false;
-		id('buttonDeleteTx').style.color='red';
 	}
 }
   
@@ -351,7 +349,7 @@ function listAccounts() {
 			listItem.index=i;
 	  		listItem.classList.add('list-item');
 			html="<b>"+accounts[i].name+"</b>";
-			if(accounts[i].balance<0) html+="<span class='amount-red'>";
+			if(accounts[i].balance<0) html+="<span class='amount-debit'>";
 			else html+="<span class='amount'>";
 			html+=pp(accounts[i].balance)+"</span>";
 			listItem.innerHTML=html;
@@ -445,11 +443,19 @@ function buildTransactionsList() {
 	 	itemCheck.index=i;
 	 	itemCheck.checked=tx.checked;
 	 	itemCheck.addEventListener('change',function() { // toggle.checked property
-	 	    transactions[this.index].checked=!transactions[this.index].checked;
-	 	    console.log("checked is "+transactions[this.index].checked)
+	 	    tx=transactions[this.index];
+	 	    tx.checked=!tx.checked;
+	 	    console.log("checked is "+tx.checked);
+	 	    var dbTransaction=db.transaction('logs',"readwrite");
+        	var dbObjectStore=dbTransaction.objectStore('logs');
+	        console.log("database ready");
+	 	    var request=dbObjectStore.put(tx); // update transaction in database
+		    request.onsuccess=function(event)  {
+			    console.log("transaction "+tx.id+" updated");
+    		};
+		    request.onerror = function(event) {console.log("error updating transaction "+tx.id);};
 	 	});
 	 	listItem.appendChild(itemCheck);
-		
 		var itemText=document.createElement('span');
 		itemText.style='margin-right:50px;';
 		itemText.index=i;
@@ -458,20 +464,13 @@ function buildTransactionsList() {
 		mon=parseInt(d.substr(5,2))-1;
 		mon*=3;
 		d=d.substr(8,2)+" "+months.substr(mon,3); // +" "+d.substr(2,2);
-		html="<span class='date'>"+d+"</span> "+trim(tx.text,15);
-		if(tx.amount<0) html+="<span class='amount-red'>";
+		html="<span class='date'>"+d+"</span> "+trim(tx.text,13);
+		if(tx.amount<0) html+="<span class='amount-debit'>";
 		else html+="<span class='amount'>";
 		html+=pp(tx.amount);
 		itemText.innerHTML=html;
 		itemText.addEventListener('click', function(){txIndex=this.index; openTx();});
 		listItem.appendChild(itemText);
-		
-		/*
-		html+=" <input type='checkbox' class='check'"+(tx.checked?" checked='checked' />":"/>");
-		html+="</span>";
-		listItem.innerHTML=html;
-		listItem.addEventListener('click', function(){txIndex=this.index; openTx();});
-		*/
 		id('list').appendChild(listItem);
 	 }
 	 accounts[acIndex].balance=balance;

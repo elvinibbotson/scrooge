@@ -218,9 +218,9 @@ input[type=number] {
 	color: white;
 }
 
-.amount-red {
+.amount-debit {
 	float: right;
-	color: red;
+	color: yellow;
 }
 
 .dialog {
