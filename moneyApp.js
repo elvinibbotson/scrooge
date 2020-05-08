@@ -17,6 +17,7 @@ function trim(text,len) {
 	return text;
 }
 
+var dragStart={};
 var db=null;
 var accounts=[];
 var accountNames=[];
@@ -29,15 +30,27 @@ var listName='Accounts';
 var lastSave=null;
 var months="JanFebMarAprMayJunJulAugSepOctNovDec";
 
-// BACK BUTTON: close open account
-id('buttonBack').addEventListener('click', function() {
-	// return to accounts list
-	console.log("BACK");
-	account=null;
-	id("buttonBack").style.display="none";
-	toggleDialog('txDialog',false);
-	listAccounts();
-});
+// DRAG TO GO BACK
+id('main').addEventListener('touchstart', function(event) {
+    // console.log(event.changedTouches.length+" touches");
+    dragStart.x=event.changedTouches[0].clientX;
+    dragStart.y=event.changedTouches[0].clientY;
+    // console.log('start drag at '+dragStart.x+','+dragStart.y);
+})
+
+id('main').addEventListener('touchend', function(event) {
+    var drag={};
+    drag.x=dragStart.x-event.changedTouches[0].clientX;
+    drag.y=dragStart.y-event.changedTouches[0].clientY;
+    // console.log('drag '+drag.x+','+drag.y);
+    if(Math.abs(drag.y)>50) return; // ignore vertical drags
+    if(drag.x<-50) { // drag right to decrease depth...
+        console.log("BACK");
+	    account=null;
+	    toggleDialog('txDialog',false);
+	    listAccounts();
+    }
+})
 
 // NEW BUTTON: create new account or transaction
 id('buttonNew').addEventListener('click',function() {
@@ -54,12 +67,13 @@ id('buttonNew').addEventListener('click',function() {
 		console.log("new transaction in "+account.name+" account");
 		txIndex=null;
 		tx={};
+		tx.checked=false;
 		var n=0;
 		while(id('txAccountChooser').options[n].text!=account.name) n++;
 		console.log("account #"+n);
 		id('txAccountChooser').selectedIndex=n;
 		id('txAccountChooser').disabled=false;
-		id('txCheckbox').checked=false;
+		// id('txCheckbox').checked=false;
 		var d=new Date().toISOString();
 		id('txDateField').value=d.substr(0,10);
 		id('txDateField').disabled=false;
@@ -138,7 +152,7 @@ id('txSign').addEventListener('click', function() {
 // SAVE NEW/EDITED TRANSACTION
 id('buttonSaveTx').addEventListener('click', function() {
 	tx.account=accountNames[id('txAccountChooser').selectedIndex];
-	tx.checked=id('txCheckbox').checked;
+	// tx.checked=id('txCheckbox').checked;
 	tx.date=id('txDateField').value;
 	tx.amount=Math.round(id('txAmountField').value*100);
 	if(id('txSign').innerHTML=="-") tx.amount*=-1;
@@ -237,34 +251,34 @@ function toggleDialog(d,visible) {
 	id('buttonNew').style.display=(visible)? 'none':'block';
 	if(d=='newAccountDialog') { // toggle new account dialog
 	    if(visible) {
-		id("newAccountDialog").classList.add('dialog-container--visible');
+		id("newAccountDialog").style.display='block';
     	} 
     	else {
-      		id("newAccountDialog").classList.remove('dialog-container--visible');
+      		id("newAccountDialog").style.display='none';
     	}
 	}
 	else if(d=='txDialog') { // toggle transaction dialog
 	    if(visible) {
-      		id("txDialog").classList.add('dialog-container--visible');
+      		id("txDialog").style.display='block';
     	}
     	else {
-      		id("txDialog").classList.remove('dialog-container--visible');
+      		id("txDialog").style.display='none';
     	}
 	}
 	else if(d=='deleteDialog') { // toggle DELETE dialog
 	  	if(visible) {
-      		id('deleteDialog').classList.add('dialog-container--visible');
+      		id('deleteDialog').style.display='block';
    		}
    		else {
-     		id('deleteDialog').classList.remove('dialog-container--visible');
+     		id('deleteDialog').style.display='none';
     	}
 	}
 	else if(d=='importDialog') { // toggle file chooser dialog
 	    if (visible) {
-      		id('importDialog').classList.add('dialog-container--visible');
+      		id('importDialog').style.display='block';
     	}
     	else {
-      		id('importDialog').classList.remove('dialog-container--visible');
+      		id('importDialog').style.display='none';
     	}
 	}
 }
@@ -276,18 +290,19 @@ function openTx() {
 	console.log("open transaction: "+txIndex+"; "+tx.text);
 	toggleDialog('txDialog',true);
 	id('txAccountChooser').selectedIndex=accountNames.indexOf(tx.account);
-	id('txCheckbox').checked=tx.checked;
+	// id('txCheckbox').checked=tx.checked;
 	id('txDateField').value=tx.date.substr(0,10);
 	id('txAmountField').value=pp(tx.amount);
 	id('txTextField').value=tx.text;
 	id('txBalance').innerHTML=pp(tx.balance);
-	id('txBalance').style.color=(tx.balance<0)?'red':'black';
+	id('txBalance').style.color=(tx.balance<0)?'red':'white';
 	var i=0;
 	while(id('txTransferChooser').options[i].text!=tx.transfer) i++;
 	id('txTransferChooser').selectedIndex=i;
 	id('txMonthly').checked=tx.monthly;
 	id('buttonDeleteTx').disabled=false;
 	id('txSign').innerHTML=(tx.amount<0)?"-":"+";
+	// id('txSign').style.background=(tx.amount<0)?'url(minusButton24px.svg) center center no-repeat;':'url(addButton24px.svg) center center no-repeat;';
 	if(tx.text=="B/F") { // can only change date or amount of earliest B/F item
 		console.log("limit edits");
 		id('txAccountChooser').disabled=true;
@@ -354,7 +369,7 @@ function listAccounts() {
 	  	console.log("transfer option 0: "+id('txTransferChooser').options[0].text);
 		html="Accounts <i>"+pp(grandTotal)+"</i>";
 	}
-	id('heading').innerHTML=html;
+	id('headerTitle').innerHTML=html;
 	var today=new Date();
 	if(today.getMonth()!=lastSave) { // backup every month
         console.log("BACKUP");
@@ -423,6 +438,21 @@ function buildTransactionsList() {
 		listItem.index=i;
 	  	listItem.classList.add('list-item');
 		tx=transactions[i];
+		
+		var itemCheck=document.createElement('input');
+	 	itemCheck.setAttribute('type','checkbox');
+	 	itemCheck.setAttribute('class','check');
+	 	itemCheck.index=i;
+	 	itemCheck.checked=tx.checked;
+	 	itemCheck.addEventListener('change',function() { // toggle.checked property
+	 	    transactions[this.index].checked=!transactions[this.index].checked;
+	 	    console.log("checked is "+transactions[this.index].checked)
+	 	});
+	 	listItem.appendChild(itemCheck);
+		
+		var itemText=document.createElement('span');
+		itemText.style='margin-right:50px;';
+		itemText.index=i;
 		d=tx.date;
 		console.log("date: "+d);
 		mon=parseInt(d.substr(5,2))-1;
@@ -432,10 +462,16 @@ function buildTransactionsList() {
 		if(tx.amount<0) html+="<span class='amount-red'>";
 		else html+="<span class='amount'>";
 		html+=pp(tx.amount);
-		html+=" <input type='checkbox'"+(tx.checked?" checked='checked' />":"/>");
+		itemText.innerHTML=html;
+		itemText.addEventListener('click', function(){txIndex=this.index; openTx();});
+		listItem.appendChild(itemText);
+		
+		/*
+		html+=" <input type='checkbox' class='check'"+(tx.checked?" checked='checked' />":"/>");
 		html+="</span>";
 		listItem.innerHTML=html;
 		listItem.addEventListener('click', function(){txIndex=this.index; openTx();});
+		*/
 		id('list').appendChild(listItem);
 	 }
 	 accounts[acIndex].balance=balance;
@@ -443,8 +479,7 @@ function buildTransactionsList() {
 	 if(balance<0) html+=" -";
 	 else html+=" ";
 	 html+=pp(balance)+"</i>";
-	 id('heading').innerHTML=html;
-	 id("buttonBack").style.display="block";
+	 id('headerTitle').innerHTML=html;
 }
 
 // RESTORE FILE

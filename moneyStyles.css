@@ -5,7 +5,7 @@ html, body {
   width: 100%;
   font-family: 'Helvetica', 'Verdana', sans-serif;
   font-weight: 400;
-  color: #444;
+  color: white;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale; }
 
@@ -39,45 +39,48 @@ body {
   background: "gray" }
  
 input {
-  height: 20px;
+    height: 20px;
 	font-size: 1.2em;
 	padding: 0;
-	background-color: white;
-	border: 1px solid gray;
+	color: white;
+	background-color: dimgray;
+	border: none;
 }
 
 input[type=date] {
-  width: 200px;
+    width: 220px;
+    font-size: 1.0em;
+    color: white;
+    background-color: dimgray;
 }
 
 input[type=text] {
-  height: 32px;
+    height: 32px;
+}
+
+input[type=number] {
+    color: white;
+    font-size: 1.2em;
 }
 
 #txTextField {
   width: 100%;
 }
 
+#txAmountField {
+    color: white;
+    font-size: 1.2em;
+}
+
 #fileChooser {
 	margin: 20px;
 }
 
-button {
-  height: 32px;
-	font-size: 1.5em;
-	vertical-align: bottom;
-	background-color: white;
-	border: 1px solid black;
-}
-
 .check {
-	width: 32px;
-	height: 32px;
+    width: 24px;
+	height: 24px;
 	vertical-align: middle;
-}
-
-#txCheckbox {
-  float: right;
+    float: right;
 }
 
 #txDateField {
@@ -87,93 +90,67 @@ button {
 }
 
 .sign {
-  width: 36px;
-  height: 36px;
-  border-width: 0;
-  background-color: transparent;
-	font-weight: bold
+    background-color: dimgray;
+	width: 24px;
+	height: 24px;
+	margin-left:10px;
+	margin-right: 10px;
+	border: none;
+	font-size: 2em;
+	font-weight: bold;
+	color: white;
+}
+
+#newAccountNameField {
+  width: 240px;
+  height: 32px;
+  border: 1px solid white;
 }
 
 #newAccountBalanceField {
   width: 120px;
   height: 32px;
+  border: 1px solid white;
 }
 
 #txAmountField {
 	width: 120px;
 	height: 32px;
+	border: 1px solid white;
+}
+
+#txTextField {
+    border: 1px solid white;
 }
 
 .header {
   width: 100%;
   height: 32px;
-  color: #FFF;
-  background: #008888;
+  color: white;
+  background: dimgray;
   position: fixed;
-  font-size: 20px;
-  box-shadow: 0 4px 5px 0 rgba(0, 0, 0, 0.14), 0 2px 9px 1px rgba(0, 0, 0, 0.12), 0 4px 2px -2px rgba(0, 0, 0, 0.2);
-  padding: 10px 10px 10px 10px;
-  display: -webkit-box;
-  display: -webkit-flex;
-  display: -ms-flexbox;
-  display: flex;
-  -webkit-box-orient: horizontal;
-  -webkit-box-direction: normal;
-  -webkit-flex-direction: row;
-      -ms-flex-direction: row;
-          flex-direction: row;
-  -webkit-flex-wrap: nowrap;
-      -ms-flex-wrap: nowrap;
-          flex-wrap: nowrap;
-  -webkit-box-pack: start;
-  -webkit-justify-content: flex-start;
-      -ms-flex-pack: start;
-          justify-content: flex-start;
-  -webkit-box-align: stretch;
-  -webkit-align-items: stretch;
-      -ms-flex-align: stretch;
-          align-items: stretch;
-  -webkit-align-content: center;
-      -ms-flex-line-pack: center;
-          align-content: center;
-  -webkit-transition: -webkit-transform 0.233s cubic-bezier(0, 0, 0.21, 1) 0.1s;
-  transition: -webkit-transform 0.233s cubic-bezier(0, 0, 0.21, 1) 0.1s;
-  transition: transform 0.233s cubic-bezier(0, 0, 0.21, 1) 0.1s;
-  transition: transform 0.233s cubic-bezier(0, 0, 0.21, 1) 0.1s, -webkit-transform 0.233s cubic-bezier(0, 0, 0.21, 1) 0.1s;
+  font-size: 1.2em;
   z-index: 1000;
-  }
+}
+
+#headerTitle {
+  font-weight: bold;
+  font-size: 1.2em;
+  margin: 10px;
+}
   
-  .headerButton {
+#buttonBack {
     width: 24px;
     height: 24px;
 	margin-left: 10px;
-    margin-right: 10px;
+    margin-right: 30px;
     overflow: hidden;
-    opacity: 1;
-    -webkit-transition: opacity 0.333s cubic-bezier(0, 0, 0.21, 1);
-    transition: opacity 0.333s cubic-bezier(0, 0, 0.21, 1);
+    display: none;
     border: none;
-    outline: none;
-    cursor: pointer;
- }
-
-  .header #buttonBack {
     background: url(backButton24px.svg) center center no-repeat;
-	margin-right: 30px;
-	display: none;
-  }
- 
-.header__title {
-  font-weight: 400;
-  font-size: 1em;
-  margin: 0;
-  -webkit-box-flex: 1;
-  -webkit-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
 }
 
-.main {
+#main {
   padding-top: 10px;
   -webkit-box-flex: 1;
   -webkit-flex: 1;
@@ -188,10 +165,9 @@ button {
 	position: fixed;
 	width: 50px;
 	height: 50px;
-	border: 0px solid #222;
+	border: none;
 	border-radius: 50%;
-	background: #008888;
-	box-shadow: 0,0,3px,gray;
+	background: dimgray;
 	z-index: 50;
 }
 
@@ -212,88 +188,68 @@ button {
     list-style: none;
     display: flex;
     flex-direction: column;
-    transition: opacity 0.2s ease-in-out;
     padding: 0 0.5em;
 }
 
 #main {
-    margin-top: 3em;
+    margin-top: 30px;
     width: 100%;
     position: relative;
+    color: white;
+    background-color: black;
 }
 
 .list-item {
 	width: 100%;
-	padding-top: 24px;
+	padding-top: 10px;
 	text-align: left;
+	color: white;
 	font-size: 1.2em; 
 	display: block;
 }
 
 .date {
-	color: #444;
+	color: white;
 	font-size: 0.8em;
 }
 
 .amount {
 	float: right;
-	color: #000;
+	color: white;
 }
 
 .amount-red {
 	float: right;
-	color: #F00;
+	color: red;
 }
 
-.dialog-container {
-  background: rgba(0, 0, 0, 0.5);
+.dialog {
+  background: dimgray;
   position: fixed;
   left: 0;
-  top: 0;
+  bottom: 0;
   width: 100%;
-  height: 100%;
-  opacity: 0;
-  pointer-events: none;
-  will-change: opacity;
-  -webkit-transition: opacity 0.333s cubic-bezier(0, 0, 0.21, 1);
-  transition: opacity 0.333s cubic-bezier(0, 0, 0.21, 1); }
-
-.dialog-container--visible {
-  opacity: 1;
-  pointer-events: auto; }
-
-.dialog {
-  background: #DDD;
-  box-shadow: 0 0 14px rgba(0, 0, 0, 0.24), 0 14px 28px rgba(0, 0, 0, 0.48);
-  position: absolute;
-  left: 0;
-  top: 32px;
-  margin-top: 10px;
-  padding-top: 24px;
-  width: 100%;
-  -webkit-transition: -webkit-transform 0.333s cubic-bezier(0, 0, 0.21, 1) 0.05s;
-  transition: -webkit-transform 0.333s cubic-bezier(0, 0, 0.21, 1) 0.05s;
-  transition: transform 0.333s cubic-bezier(0, 0, 0.21, 1) 0.05s;
-  transition: transform 0.333s cubic-bezier(0, 0, 0.21, 1) 0.05s, -webkit-transform 0.333s cubic-bezier(0, 0, 0.21, 1) 0.05s; }
-
-.dialog > div {
-  padding-top: 5px;
-  padding-left: 24px;
-  padding-right: 24px; }
+  display: none;
+}
 
 .dialog-title {
-  padding-top: 20px;
-  font-size: 1em;
+  margin: 10px;
+  color: white;
+  font-size: 1.2em;
   font-weight: bold;
 }
 
 .dialog-body {
-  padding-top: 5px;
-  padding-bottom: 5px; }
+  margin: 10px;
+  color: white;
+  font-size: 1em;
+}
   
 .dialog-body select {
     width: 30%;
 	height: 32px;
+	color: white;
+	background-color: dimgray;
 	font-size: 1em;
 }
 
@@ -302,10 +258,45 @@ button {
   float: right;
 }
 
-.button {
-	background-color: white;
+.icon-button {
+	background-color: dimgray;
+	width: 24px;
+	height: 24px;
+	margin-left:10px;
+	margin-right: 10px;
+	border: none;
+	font-size: 2em;
+	font-weight: bold;
 }
-.deleteButton {
-	color: red;
-	margin-right: 50px;
+
+#buttonCancelImport {
+    background: url(cancelButton24px.svg) center center no-repeat;
+}
+
+#buttonCancelNewAccount {
+    background: url(cancelButton24px.svg) center center no-repeat;
+}
+
+#buttonAddNewAccount {
+    background: url(addButton24px.svg) center center no-repeat;
+}
+
+#buttonDeleteTx {
+    background: url(deleteButton24px.svg) center center no-repeat;
+}
+
+#buttonCancelTx {
+    background: url(cancelButton24px.svg) center center no-repeat;
+}
+
+#buttonSaveTx {
+    background: url(okButton24px.svg) center center no-repeat;
+}
+
+#buttonDeleteConfirm {
+    background: url(deleteButton24px.svg) center center no-repeat;
+}
+
+#buttonCancelDelete {
+    background: url(cancelButton24px.svg) center center no-repeat;
 }
