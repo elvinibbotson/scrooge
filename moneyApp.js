@@ -464,7 +464,7 @@ function buildTransactionsList() {
 		mon=parseInt(d.substr(5,2))-1;
 		mon*=3;
 		d=d.substr(8,2)+" "+months.substr(mon,3); // +" "+d.substr(2,2);
-		html="<span class='date'>"+d+"</span> "+trim(tx.text,12);
+		html="<span class='date'>"+d+"</span> "+trim(tx.text,10);
 		if(tx.amount<0) html+="<span class='amount-debit'>";
 		else html+="<span class='amount'>";
 		html+=pp(tx.amount);
