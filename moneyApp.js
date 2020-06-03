@@ -348,7 +348,7 @@ function listAccounts() {
 			var listItem=document.createElement('li'); // add account to accounts list...
 			listItem.index=i;
 	  		listItem.classList.add('list-item');
-			html="<b>"+accounts[i].name+"</b>";
+			html="<b>"+trim(accounts[i].name,12)+"</b>";
 			if(accounts[i].balance<0) html+="<span class='amount-debit'>";
 			else html+="<span class='amount'>";
 			html+=pp(accounts[i].balance)+"</span>";
