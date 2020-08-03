@@ -19,7 +19,7 @@ function trim(text,len) {
 
 var dragStart={};
 var db=null;
-var accounts=[];
+var accounts=[]; 
 var accountNames=[];
 var account=null;
 var acIndex=null;
@@ -197,9 +197,9 @@ id('buttonSaveTx').addEventListener('click', function() {
 	if(transfer) { // IF NECESSARY CREATE RECIPROCAL TRANSACTION IN TRANSFER ACCOUNT
 		console.log("create reciprocal transaction");
 		var t={};
-		t.account=transfer;
+		t.account=tx.transfer;
 		t.checked=false;
-		t.date=app.tx.date;
+		t.date=tx.date;
 		t.amount=-1*tx.amount;
 		t.text=tx.account;
 		t.transfer="none";
@@ -560,7 +560,7 @@ function backup() {
 // START-UP CODE
 console.log("START");
 lastSave=window.localStorage.getItem('saveDate'); // date of last backup
-console.log("last save day: "+lastSave);
+// console.log("last save month: "+lastSave);
 var request=window.indexedDB.open("transactionsDB");
 request.onerror=function(event) {
 	alert("indexedDB error");
@@ -689,3 +689,4 @@ else { // Register the ServiceWorker
 	});
 }
 
+             
