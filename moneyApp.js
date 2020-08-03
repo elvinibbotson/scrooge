@@ -688,5 +688,3 @@ else { // Register the ServiceWorker
 	    console.log('Service worker has been registered for scope:'+ reg.scope);
 	});
 }
-
-             
