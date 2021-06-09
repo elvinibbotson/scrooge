@@ -3,7 +3,7 @@
   "short_name": "scrooge",
   "icons": [
   {
-    "src": "scrooge.png",
+    "src": "scrooge512.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
@@ -12,6 +12,6 @@
   "start_url": "index.html",
   "display": "standalone",
   "orientation":"portrait",
-  "background_color": "#666666",
-  "theme_color": "#666666"
+  "background_color": "yellow",
+  "theme_color": "yellow"
 }
