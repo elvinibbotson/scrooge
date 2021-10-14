@@ -473,6 +473,7 @@ function buildTransactionsList() {
 		listItem.appendChild(itemText);
 		id('list').appendChild(listItem);
 	 }
+	 id('txSign').innerHTML='-'; // default to debit
 	 accounts[acIndex].balance=balance;
 	 html=trim(account.name,12)+" <i>";
 	 if(balance<0) html+=" -";
