@@ -23,6 +23,7 @@ var accounts=[];
 var accountNames=[];
 var account=null;
 var acIndex=null;
+var investment=false; // NEW FLAG
 var transactions=[];
 var tx=null;
 var grandTotal=0;
@@ -55,12 +56,16 @@ id('main').addEventListener('touchend', function(event) {
 // NEW BUTTON: create new account or transaction
 id('buttonNew').addEventListener('click',function() {
 	console.log("new");
+	var d=new Date().toISOString();
     if(!account) { // no account open - show new account dialog
 		console.log("new account");
 		toggleDialog('newAccountDialog',true);
 		id('newAccountNameField').value="";
+		id('newAccountDateField').value=d.substr(0,10);
+		id('newAccountDateField').disabled=false;
 		id("newAccountBalanceField").value=null;
 		id('newAccountBalanceField').placeholder="£.pp";
+		id('newAccountInvestmentFlag').checked=false; // NEW
 	}
 	else { // if viewing account, show transaction dialog
 		toggleDialog('txDialog',true);
@@ -73,8 +78,7 @@ id('buttonNew').addEventListener('click',function() {
 		console.log("account #"+n);
 		id('txAccountChooser').selectedIndex=n;
 		id('txAccountChooser').disabled=false;
-		// id('txCheckbox').checked=false;
-		var d=new Date().toISOString();
+		// var d=new Date().toISOString();
 		id('txDateField').value=d.substr(0,10);
 		id('txDateField').disabled=false;
 		id('txAmountField').value=null;
@@ -83,7 +87,7 @@ id('buttonNew').addEventListener('click',function() {
 		id('txTextField').value="";
 		id('txTextField').disabled=false;
 		id('txTransferChooser').selectedIndex=0;
-		id('txTransferChooser').disabled=false;
+		id('txTransferChooser').disabled=investment;  // NEW - WAS id('txTransferChooser').disabled=false;
 		id('txMonthly').checked=false;
 		id('txMonthly').disabled=false;
 		id('txBalance').style.color='gray';
@@ -92,29 +96,32 @@ id('buttonNew').addEventListener('click',function() {
 	}
 })
 
-// TOGGLE +/- ACCOUNT STARTING BALANCE
+// TOGGLE ACCOUNT STARTING BALANCE SIGN
 id('acSign').addEventListener('click', function() {
 	var s=id('acSign').innerHTML;
 	console.log("toggle sign - currently "+s);
   	if(s=='+') id('acSign').innerHTML="-";
 	else id('acSign').innerHTML="+";
 })
+
 // SAVE NEW ACCOUNT
 id('buttonAddNewAccount').addEventListener('click',function() {
 	var name=id('newAccountNameField').value;
 	if((name.length>0)&&(accounts.indexOf(name)<0)) {
-		var amount=id('newAccountBalanceField').value*100; // save amounts and balances as
+		var amount=Math.round(id('newAccountBalanceField').value*100); // save amounts and balances as pence
 		if(id('acSign').innerHTML=="-") amount*=-1;
 		var ac={name: name, balance: amount};
 		console.log("new account name: "+ac.name+"; amount: "+ac.balance+" pence");
 	  	accounts.push(ac);
 		var tx={};
-		tx.date=new Date().toISOString();
+		tx.date=id('newAccountDateField').value; // NEW REPLACES...
+		// tx.date=new Date().toISOString();
 		tx.account=name;
 		tx.amount=amount;
 		tx.text="B/F";
 		tx.checked=false;
 		tx.transfer="none";
+		if(id('newAccountInvestmentFlag').checked) tx.transfer="investment";
 		tx.monthly=false;
 		transactions.push(tx);
 		toggleDialog('newAccountDialog', false);
@@ -124,7 +131,7 @@ id('buttonAddNewAccount').addEventListener('click',function() {
 		var dbObjectStore=dbTransaction.objectStore('logs');
 		console.log("indexedDB objectStore ready");
 		var request=dbObjectStore.add(tx);
-		request.onsuccess=function(event) {console.log("transaction added");};
+		request.onsuccess=function(event) {console.log("transaction added - investment: "+tx.transfer);};
 		request.onerror=function(event) {console.log("error adding new transaction");};
 	  }
 })
@@ -139,11 +146,12 @@ id('txDateField').addEventListener('change', function() {
 	console.log("change date");
 })
 
-// TOGGLE +/- TRANSACTION AMOUNT
+// TOGGLE TRANSACTION AMOUNT SIGN
 id('txSign').addEventListener('click', function() {
 	var s=id('txSign').innerHTML;
 	console.log("toggle sign - currently "+s);
 	if(s=='+') id('txSign').innerHTML="-";
+	else if(investment && (s=='-')) id('txSign').innerHTML="="; // NEW INVESTMNET TRANSACTIONS CAN JUST BE =NEW VALUE
 	else id('txSign').innerHTML="+";
 	event.preventDefault();
 	event.stopPropagation();
@@ -156,12 +164,16 @@ id('buttonSaveTx').addEventListener('click', function() {
 	tx.date=id('txDateField').value;
 	tx.amount=Math.round(id('txAmountField').value*100);
 	if(id('txSign').innerHTML=="-") tx.amount*=-1;
-	tx.text=id('txTextField').value;
-	var i=id('txTransferChooser').selectedIndex;
-	var transfer=id('txTransferChooser').options[i].text;
-	console.log("transfer change to:"+transfer);
-	if((transfer=="none")||(transfer==tx.transfer)) transfer=null; // (usually) no need to create reciprocal transaction
-	tx.transfer=id('txTransferChooser').options[i].text;
+	if(id('txSign').innerHTML=="=") tx.text='gain'; // NEW - amount IS INVESTMENT VALUE
+	else tx.text=id('txTextField').value;
+	if(investment) transfer=null; // NEW
+	else {
+		var i=id('txTransferChooser').selectedIndex;
+		var transfer=id('txTransferChooser').options[i].text;
+		console.log("transfer change to:"+transfer);
+		if((transfer=="none")||(transfer==tx.transfer)) transfer=null; // (usually) no need to create reciprocal transaction
+		tx.transfer=id('txTransferChooser').options[i].text;
+	}
 	tx.monthly=id('txMonthly').checked;
     toggleDialog('txDialog',false);
 	console.log("save transaction - date: "+tx.date+" "+tx.amount+"p - "+tx.text+" app.txIndex: "+txIndex);
@@ -290,19 +302,32 @@ function openTx() {
 	console.log("open transaction: "+txIndex+"; "+tx.text);
 	toggleDialog('txDialog',true);
 	id('txAccountChooser').selectedIndex=accountNames.indexOf(tx.account);
-	// id('txCheckbox').checked=tx.checked;
 	id('txDateField').value=tx.date.substr(0,10);
-	id('txAmountField').value=pp(tx.amount);
+	// id('txAmountField').value=pp(tx.amount);
 	id('txTextField').value=tx.text;
 	id('txBalance').innerHTML=pp(tx.balance);
 	id('txBalance').style.color=(tx.balance<0)?'yellow':'white';
 	var i=0;
-	while(id('txTransferChooser').options[i].text!=tx.transfer) i++;
-	id('txTransferChooser').selectedIndex=i;
-	id('txMonthly').checked=tx.monthly;
+	if(investment) { // NEW - NO TRANSFERS IN INVESTMENTS
+		id('txTransferChooser').disabled=true;
+		id('txMonthly').disabled=true;
+	}
+	else {
+		while(id('txTransferChooser').options[i].text!=tx.transfer) i++;
+		id('txTransferChooser').selectedIndex=i;
+		id('txMonthly').checked=tx.monthly;
+	}
 	id('buttonDeleteTx').disabled=false;
 	id('txSign').innerHTML=(tx.amount<0)?"-":"+";
-	// id('txSign').style.background=(tx.amount<0)?'url(minusButton24px.svg) center center no-repeat;':'url(addButton24px.svg) center center no-repeat;';
+	if(tx.text=='gain') { // NEW CODE...
+		id('txSign').innerHTML='=';
+		id('txTextField').value='';
+		id('txTextField').disabled=true;
+	}
+	else {
+		id('txTextField').value=tx.text;
+		id('txTextField').disabled=false;
+	}
 	if(tx.text=="B/F") { // can only change date or amount of earliest B/F item
 		console.log("limit edits");
 		id('txAccountChooser').disabled=true;
@@ -397,6 +422,8 @@ function openAccount() {
 			else {
 				console.log(transactions.length+" account transactions");
     			transactions.sort(function(a,b) { return Date.parse(a.date)-Date.parse(b.date)}); //chronological order
+    			investment=transactions[0].transfer=='investment'; // NEW
+    			console.log('investment account: '+investment); // NEW
 	  			if(transactions.length>50) { // limit each account to latest 50 transactions}
 					console.log(">50 transactions - deleting earliest");
 					transactions[1].amount+=transactions[0].amount; // create new B/F item for account
@@ -428,7 +455,8 @@ function buildTransactionsList() {
 	 var balance=0;
 	 console.log("list "+transactions.length+" transactions");
 	 for(var i in transactions) {
-		balance+=transactions[i].amount;
+	 	if(transactions[i].text=='gain') balance=transactions[i].amount; // NEW
+		else balance+=transactions[i].amount;
 		transactions[i].balance=balance; // save balance after each transaction in account
 	 }
 	 for(var i=transactions.length-1;i>=0;i--) { // latest at top
@@ -436,7 +464,6 @@ function buildTransactionsList() {
 		listItem.index=i;
 	  	listItem.classList.add('list-item');
 		tx=transactions[i];
-		
 		var itemCheck=document.createElement('input');
 	 	itemCheck.setAttribute('type','checkbox');
 	 	itemCheck.setAttribute('class','check');
@@ -465,9 +492,11 @@ function buildTransactionsList() {
 		mon*=3;
 		d=d.substr(8,2)+" "+months.substr(mon,3); // +" "+d.substr(2,2);
 		html="<span class='date'>"+d+"</span> "+trim(tx.text,10);
-		if(tx.amount<0) html+="<span class='amount-debit'>";
+		var a=tx.amount; // NEW
+		if(investment && tx.text=='gain') a=tx.amount-transactions[i-1].balance; // NEW LIST GAIN/LOSS FROM PREVIOUS BALANCE
+		if(a<0) html+="<span class='amount-debit'>";
 		else html+="<span class='amount'>";
-		html+=pp(tx.amount);
+		html+=pp(a);
 		itemText.innerHTML=html;
 		itemText.addEventListener('click', function(){txIndex=this.index; openTx();});
 		listItem.appendChild(itemText);

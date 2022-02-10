@@ -36,8 +36,11 @@
 <div id="newAccountDialog" class="dialog">
     <div class="dialog-title">New account</div>
     <div class="dialog-body"> name <input type="text" id="newAccountNameField"/></div>
-	<div class="dialog-body"> start with <button id='acSign' class='sign'>+</button>
-	    <input type="number" id="newAccountBalanceField" /></div>
+	<div class="dialog-body"> start <input type="date" id="newAccountDateField"/></div>
+	<div class="dialog-body"> with <button id='acSign' class='sign'>+</button>
+	    <input type="number" id="newAccountBalanceField" />
+	    <span style='float:right;'>investment<input type="checkbox" class="check" id="newAccountInvestmentFlag"/></span>
+	</div>
     <div class="dialog-buttons">
 	  	<button id="buttonCancelNewAccount" class="icon-button"></button>
       	<button id="buttonAddNewAccount" class="icon-button"></button>  
