@@ -2,8 +2,7 @@ function id(el) {
 	return document.getElementById(el);
 }
 
-function pp(p) {
-	// convert pence to pounds.pence (2 decimals)
+function pp(p) { // convert pence to pounds.pence (2 decimals)
 	p=Math.abs(p);
 	var amount=Math.floor(p/100)+".";
 	var pence=p%100;
@@ -12,11 +11,18 @@ function pp(p) {
 	return amount;
 }
 
-function trim(text,len) {
+function trim(text,len) { // trime text to len characters
 	if(text.length>len) text=text.substr(0,len-3)+"...";
 	return text;
 }
 
+function day(d) { // get day number from date d
+	// console.log('day number for '+d);
+	return Math.floor(new Date(d).getTime()/86400000);
+}
+
+var scrW; // NEW - screen size
+var scrH;
 var dragStart={};
 var db=null;
 var accounts=[]; 
@@ -28,28 +34,42 @@ var transactions=[];
 var tx=null;
 var grandTotal=0;
 var listName='Accounts';
+var view='list'; // NEW
+var canvas=null; // NEW
 var lastSave=null;
 var months="JanFebMarAprMayJunJulAugSepOctNovDec";
 
-// DRAG TO GO BACK
+// DRAG LEFT/RIGHT ACTIONS
 id('main').addEventListener('touchstart', function(event) {
     // console.log(event.changedTouches.length+" touches");
     dragStart.x=event.changedTouches[0].clientX;
     dragStart.y=event.changedTouches[0].clientY;
     // console.log('start drag at '+dragStart.x+','+dragStart.y);
 })
-
 id('main').addEventListener('touchend', function(event) {
-    var drag={};
-    drag.x=dragStart.x-event.changedTouches[0].clientX;
-    drag.y=dragStart.y-event.changedTouches[0].clientY;
-    // console.log('drag '+drag.x+','+drag.y);
-    if(Math.abs(drag.y)>50) return; // ignore vertical drags
-    if(drag.x<-50) { // drag right to decrease depth...
-        console.log("BACK");
-	    account=null;
-	    toggleDialog('txDialog',false);
-	    listAccounts();
+    var dragX=event.changedTouches[0].clientX-dragStart.x;
+    if(view=='list') { // list view
+    	if(dragX>50) { // drag right to decrease depth...
+        	console.log("BACK");
+	    	account=null;
+	    	toggleDialog('txDialog',false);
+	    	listAccounts();
+    	}
+    	else if(dragX<-50) { // drag left to switch to graph view
+    		view='graph';
+    		id('listPanel').style.display='none';
+    		id('heading').style.display='none';
+    		drawGraph();
+    	}
+    }
+    else { // graph view
+    	if(dragX>50) { // drag right to return to list view
+    		view='list';
+    		id('graphPanel').style.display='none';
+    		id('graphOverlay').style.display='none';
+    		id('listPanel').style.display='block';
+    		id('heading').style.display='block';
+    	}
     }
 })
 
@@ -81,6 +101,7 @@ id('buttonNew').addEventListener('click',function() {
 		// var d=new Date().toISOString();
 		id('txDateField').value=d.substr(0,10);
 		id('txDateField').disabled=false;
+		id('txSign').innerHTML=(investment)?'=':'-';
 		id('txAmountField').value=null;
 		id('txAmountField').placeholder="£.pp";
 		console.log("set text to blank");
@@ -511,6 +532,101 @@ function buildTransactionsList() {
 	 id('headerTitle').innerHTML=html;
 }
 
+// NEW - DRAW GRAPH
+function drawGraph() {
+	console.log('GRAPH');
+	var firstDay=day(transactions[0].date); // whole days
+	var lastDay=day(transactions[transactions.length-1].date);
+	var n=lastDay-firstDay;
+	var dayW=scrW/n; // pixels/day
+	console.log('graph spans '+n+' days from '+firstDay+' to '+lastDay);
+	console.log('screen width: '+scrW+'; '+transactions.length+' transactions'); // canvasL is '+canvasL+'; width is '+id('canvas').width);
+	id('graphPanel').style.display='block';
+	// var margin=120; // bottom margin
+	// set vertical scale
+	var max=0; // maximum (or minimum if debit) balance
+	for(var i=0; i<transactions.length;i++) if(Math.abs(transactions[i].balance)>max) max=Math.abs(transactions[i].balance);
+	max/=100;
+	console.log('maximum balance: £'+max);
+	var d=0; // no of digits
+	n=1;
+	while(n<max) { // count digits
+		n*=10;
+		d++;
+	}
+	console.log(d+' digits'); 
+	n/=10; // determine scale limit
+	var m=n;
+	while(m<max) m+=n; // m is next multiple of £10, £100, £1000, etc above max
+	ppp=scrH/2/m; // pixels per pound
+	console.log(ppp+' px/£');
+	// draw graph of balance against days/transactions
+	canvas.clearRect(0,0,scrW,scrH);
+	canvas.strokeStyle='yellow';
+	canvas.lineWidth=3;
+	canvas.beginPath();
+	for(i=0;i<transactions.length;i++) {
+		var val=transactions[i].balance/100;
+		var x=(day(transactions[i].date)-firstDay)*dayW;
+		var y=scrH/2-val*ppp; // £0.00 is at mid-screen
+		console.log('balance: '+val+'point '+i+': '+x+','+y);
+		if(i<1) canvas.moveTo(x,y);
+		else canvas.lineTo(x,y);
+	}
+    canvas.stroke();
+    // draw £ scale
+    canvas.font='20px Monospace';
+    canvas.fillStyle='white';
+    y=0;
+    var unit=Math.pow(10,d-1); // 1, 10, 100, 1000,...
+    var n=0;
+    console.log('m: '+m+' digits: '+d+' unit: '+unit);
+    while(n<m) { // from 0 to >max
+    	// console.log('write '+n+' at '+x+','+y);
+    	canvas.fillText(-n,5,scrH/2-y);
+    	canvas.fillText(n,5,scrH/2+y);
+    	n+=unit;
+    	y-=unit*ppp;
+    }
+	/* then draw kWh and months along axes
+	overlay.font='20px Monospace';
+	overlay.fillStyle='skyblue';
+	overlay.fillText('grid',25,20);
+	overlay.fillStyle='lightgreen';
+	overlay.fillText('PV',100,20);
+	overlay.fillStyle='plum';
+	overlay.fillText('yield',150,20);
+	overlay.fillStyle='orange';
+	overlay.fillText('input',225,20);
+	overlay.fillStyle='yellow';
+	overlay.fillText('solar',300,20);
+	overlay.fillStyle='white';
+	overlay.lineWidth=1;
+	y=(scr.h-margin)/15; // 100kWh intervals - px
+	for(i=0;i<13;i++) overlay.fillText(i*100,0,scr.h-margin-i*100*kWh); // kWh
+	// for(i=0;i<15;i++) overlay.fillText(i*100,-1*canvasL,scr.h-margin-i*100*kWh); // 0-1500 (kWh)
+	overlay.strokeStyle='silver';
+	overlay.beginPath();
+	for(i=0;i<15;i++) {
+		overlay.moveTo(0,scr.h-margin-i*100*kWh);
+		overlay.lineTo(scr.w,scr.h-margin-i*100*kWh); // grey lines
+		// canvas.lineTo(id('canvas').width,scr.h-margin-i*100*kWh); // grey lines
+	}
+	overlay.stroke();
+	canvas.font='20px Monospace';
+	canvas.fillStyle='white';
+	for(var i=1;i<logs.length;i++) {
+		x=(i-1)*monthW;
+		var m=parseInt(logs[i].date.substr(5,2))-1;
+		canvas.fillText(letters.substr(m,1),x,scr.h-margin+40); // month letter
+		if(m<1) {
+			var year=logs[i].date.substr(0,4);
+			canvas.fillText(year,x,scr.h-margin+20); // YYYY
+		}
+	}
+	*/
+}
+
 // RESTORE FILE
 function restore() {
     toggleDialog("importDialog", true);
@@ -589,6 +705,18 @@ function backup() {
     
 // START-UP CODE
 console.log("START");
+var scrW=screen.width; // NEW CODE - SET UP FOR GRAPHS
+var scrH=screen.height;
+console.log('screen size: '+scrW+'x'+scrH+'px');
+// dayW=scrW/30; // approx 1 month visible in graph
+// console.log('dayW: '+dayW+'px');
+id("canvas").width=scrW;
+id("canvas").height=scrH;
+console.log('canvas size: '+id("canvas").width+'x'+id("canvas").height);
+// id("overlay").width=scrW;
+// id("overlay").height=scrH;
+canvas=id('canvas').getContext('2d');
+// overlay=id('overlay').getContext('2d');
 lastSave=window.localStorage.getItem('saveDate'); // date of last backup
 // console.log("last save month: "+lastSave);
 var request=window.indexedDB.open("transactionsDB");
@@ -626,7 +754,7 @@ request.onsuccess=function(event) {
     		transactions.sort(function(a,b) { return Date.parse(a.date)-Date.parse(b.date)}); //chronological order
    			accounts=[];
 			var acNames=[];
-    		var acBalances=[];
+    		// NOT NEEDED: var acBalances=[];
     		var n=0;
     		for(var i in transactions) { // build list of accounts
 				var today=new Date();
@@ -696,14 +824,24 @@ request.onsuccess=function(event) {
     			n=acNames.indexOf(transactions[i].account);
 		  		if(n<0) {
 	  				console.log("add account "+transactions[i].account);
+	  				acNames.push(transactions[i].account);
+	  				accounts.push({name: transactions[i].account, balance: transactions[i].amount}); // NEW CODE REPLACES...
+	  				/* OLD CODE
 	   				acNames.push(transactions[i].account);
 	  				acBalances.push(transactions[i].amount);
+	  				*/
 	  			}
-	  			else acBalances[n]+=transactions[i].amount;
+	  			else { // NEW CODE FOLLOWS...
+	  				if(transactions[i].text=='gain') accounts[n].balance=transactions[i].amount; // NEW
+					else accounts[n].balance+=transactions[i].amount;
+	  				// OLD CODE: acBalances[n]+=transactions[i].amount;
+	  			}
     		}
+    		/* NOT NEEDED...
 			for(n in acNames) {
   				accounts.push({name: acNames[n], balance: acBalances[n]});
   			}
+  			*/
   			console.log(accounts.length+" accounts");
 			listAccounts();
 		}
