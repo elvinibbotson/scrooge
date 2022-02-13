@@ -352,7 +352,7 @@ function openTx() {
 	if(tx.text=="B/F") { // can only change date or amount of earliest B/F item
 		console.log("limit edits");
 		id('txAccountChooser').disabled=true;
-		id('txDateField').disabled=true;
+		// id('txDateField').disabled=true;
 		id('txTextField').disabled=true;
 		id('txTransferChooser').disabled=true;
 		id('txMonthly').disabled=true;
