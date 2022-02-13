@@ -539,7 +539,7 @@ function drawGraph() {
 	var lastDay=day(transactions[transactions.length-1].date);
 	var n=lastDay-firstDay;
 	var dayW=scrW/n; // pixels/day
-	console.log('graph spans '+n+' days from '+firstDay+' to '+lastDay);
+	alert('graph spans '+n+' days from '+firstDay+' to '+lastDay+' dayW: '+dayW);
 	console.log('screen width: '+scrW+'; '+transactions.length+' transactions'); // canvasL is '+canvasL+'; width is '+id('canvas').width);
 	id('graphPanel').style.display='block';
 	// var margin=120; // bottom margin
@@ -569,7 +569,7 @@ function drawGraph() {
 		var val=transactions[i].balance/100;
 		var x=(day(transactions[i].date)-firstDay)*dayW;
 		var y=scrH/2-val*ppp; // £0.00 is at mid-screen
-		alert('balance: '+val+'point '+i+': '+x+','+y);
+		console.log('balance: '+val+'point '+i+': '+x+','+y);
 		if(i<1) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 	}
@@ -593,14 +593,14 @@ function drawGraph() {
     d=transactions[0].date;
     m=parseInt(d.substr(5,2))-1;
 	m*=3;
-	n=months.substr(m,3)+"'"+d.substr(2,2); // date format Mon 'YY
+	n=d.substr(8,2)+months.substr(m,3)+d.substr(2,2); // date format Mon 'YY
 	console.log('print '+n);
 	canvas.textBaseline='top';
 	canvas.fillText(n,5,5);
 	d=transactions[transactions.length-1].date;
     m=parseInt(d.substr(5,2))-1;
 	m*=3;
-	n=months.substr(m,3)+"'"+d.substr(2,2); // date format Mon 'YY
+	n=d.substr(8,2)+months.substr(m,3)+d.substr(2,2); // date format Mon 'YY
 	canvas.textAlign='right';
 	canvas.fillText(n,scrW-5,5);
 	alert('graph drawn; last date: '+d+'; last balance: '+transactions[transactions.length-1].balance/100);
