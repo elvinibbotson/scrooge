@@ -569,7 +569,7 @@ function drawGraph() {
 		var val=transactions[i].balance/100;
 		var x=(day(transactions[i].date)-firstDay)*dayW;
 		var y=scrH/2-val*ppp; // £0.00 is at mid-screen
-		console.log('balance: '+val+'point '+i+': '+x+','+y);
+		alert('balance: '+val+'point '+i+': '+x+','+y);
 		if(i<1) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
 	}
@@ -603,7 +603,7 @@ function drawGraph() {
 	n=months.substr(m,3)+"'"+d.substr(2,2); // date format Mon 'YY
 	canvas.textAlign='right';
 	canvas.fillText(n,scrW-5,5);
-	alert('graph drawn; last date: '+d+'; last balance: '+transactions[transactions.length-1].balance/10);
+	alert('graph drawn; last date: '+d+'; last balance: '+transactions[transactions.length-1].balance/100);
 }
 
 // RESTORE FILE
