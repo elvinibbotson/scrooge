@@ -574,7 +574,6 @@ function drawGraph() {
 		else canvas.lineTo(x,y);
 	}
     canvas.stroke();
-    alert('graph drawn');
     // draw £ scale
     canvas.font='20px Monospace';
     canvas.fillStyle='white';
@@ -594,16 +593,17 @@ function drawGraph() {
     d=transactions[0].date;
     m=parseInt(d.substr(5,2))-1;
 	m*=3;
-	n=months.substr(m,3)+"'"+d.substr(8,2); // date format Mon 'YY
+	n=months.substr(m,3)+"'"+d.substr(2,2); // date format Mon 'YY
 	console.log('print '+n);
 	canvas.textBaseline='top';
 	canvas.fillText(n,5,5);
 	d=transactions[transactions.length-1].date;
     m=parseInt(d.substr(5,2))-1;
 	m*=3;
-	n=months.substr(m,3)+"'"+d.substr(8,2); // date format Mon 'YY
+	n=months.substr(m,3)+"'"+d.substr(2,2); // date format Mon 'YY
 	canvas.textAlign='right';
 	canvas.fillText(n,scrW-5,5);
+	alert('graph drawn; last date: '+d+'; last balance: '+transactions[transactions.length-1].balance/10);
 }
 
 // RESTORE FILE
