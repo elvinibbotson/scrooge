@@ -574,9 +574,12 @@ function drawGraph() {
 		else canvas.lineTo(x,y);
 	}
     canvas.stroke();
+    alert('graph drawn');
     // draw £ scale
     canvas.font='20px Monospace';
     canvas.fillStyle='white';
+    canvas.textAlign='left';
+    canvas.textBaseline='middle';
     y=0;
     var unit=Math.pow(10,d-1); // 1, 10, 100, 1000,...
     var n=0;
@@ -588,43 +591,19 @@ function drawGraph() {
     	n+=unit;
     	y-=unit*ppp;
     }
-	/* then draw kWh and months along axes
-	overlay.font='20px Monospace';
-	overlay.fillStyle='skyblue';
-	overlay.fillText('grid',25,20);
-	overlay.fillStyle='lightgreen';
-	overlay.fillText('PV',100,20);
-	overlay.fillStyle='plum';
-	overlay.fillText('yield',150,20);
-	overlay.fillStyle='orange';
-	overlay.fillText('input',225,20);
-	overlay.fillStyle='yellow';
-	overlay.fillText('solar',300,20);
-	overlay.fillStyle='white';
-	overlay.lineWidth=1;
-	y=(scr.h-margin)/15; // 100kWh intervals - px
-	for(i=0;i<13;i++) overlay.fillText(i*100,0,scr.h-margin-i*100*kWh); // kWh
-	// for(i=0;i<15;i++) overlay.fillText(i*100,-1*canvasL,scr.h-margin-i*100*kWh); // 0-1500 (kWh)
-	overlay.strokeStyle='silver';
-	overlay.beginPath();
-	for(i=0;i<15;i++) {
-		overlay.moveTo(0,scr.h-margin-i*100*kWh);
-		overlay.lineTo(scr.w,scr.h-margin-i*100*kWh); // grey lines
-		// canvas.lineTo(id('canvas').width,scr.h-margin-i*100*kWh); // grey lines
-	}
-	overlay.stroke();
-	canvas.font='20px Monospace';
-	canvas.fillStyle='white';
-	for(var i=1;i<logs.length;i++) {
-		x=(i-1)*monthW;
-		var m=parseInt(logs[i].date.substr(5,2))-1;
-		canvas.fillText(letters.substr(m,1),x,scr.h-margin+40); // month letter
-		if(m<1) {
-			var year=logs[i].date.substr(0,4);
-			canvas.fillText(year,x,scr.h-margin+20); // YYYY
-		}
-	}
-	*/
+    d=transactions[0].date;
+    m=parseInt(d.substr(5,2))-1;
+	m*=3;
+	n=months.substr(m,3)+"'"+d.substr(8,2); // date format Mon 'YY
+	console.log('print '+n);
+	canvas.textBaseline='top';
+	canvas.fillText(n,5,5);
+	d=transactions[transactions.length-1].date;
+    m=parseInt(d.substr(5,2))-1;
+	m*=3;
+	n=months.substr(m,3)+"'"+d.substr(8,2); // date format Mon 'YY
+	canvas.textAlign='right';
+	canvas.fillText(n,scrW-5,5);
 }
 
 // RESTORE FILE
