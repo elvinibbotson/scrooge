@@ -539,6 +539,11 @@ function drawGraph() {
 	var lastDay=day(transactions[transactions.length-1].date);
 	var n=lastDay-firstDay;
 	var dayW=scrW/n; // pixels/day
+	
+	var d=new Date(transactions[0].date);
+	var t=d.getTime();
+	alert('date: '+d+' = '+t+'ms');
+	
 	alert('graph spans '+n+' days from '+firstDay+' to '+lastDay+' dayW: '+dayW);
 	console.log('screen width: '+scrW+'; '+transactions.length+' transactions'); // canvasL is '+canvasL+'; width is '+id('canvas').width);
 	id('graphPanel').style.display='block';
