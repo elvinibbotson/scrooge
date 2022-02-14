@@ -135,8 +135,7 @@ id('buttonAddNewAccount').addEventListener('click',function() {
 		console.log("new account name: "+ac.name+"; amount: "+ac.balance+" pence");
 	  	accounts.push(ac);
 		var tx={};
-		tx.date=id('newAccountDateField').value; // NEW REPLACES...
-		// tx.date=new Date().toISOString();
+		tx.date=id('newAccountDateField').value;
 		tx.account=name;
 		tx.amount=amount;
 		tx.text="B/F";
@@ -352,7 +351,6 @@ function openTx() {
 	if(tx.text=="B/F") { // can only change date or amount of earliest B/F item
 		console.log("limit edits");
 		id('txAccountChooser').disabled=true;
-		// id('txDateField').disabled=true;
 		id('txTextField').disabled=true;
 		id('txTransferChooser').disabled=true;
 		id('txMonthly').disabled=true;
@@ -447,7 +445,7 @@ function openAccount() {
     			console.log('investment account: '+investment); // NEW
 	  			if(transactions.length>50) { // limit each account to latest 50 transactions}
 					console.log(">50 transactions - deleting earliest");
-					transactions[1].amount+=transactions[0].amount; // create new B/F item for account
+					if(transactions[1].text!='gain') transactions[1].amount+=transactions[0].amount; // create new B/F item for account
 					transactions[1].text="B/F";
 					request=dbObjectStore.put(transactions[1]); // update transaction in database
 					request.onsuccess=function(event)  {console.log("new B/F transaction  updated");};
@@ -539,15 +537,14 @@ function drawGraph() {
 	var lastDay=day(transactions[transactions.length-1].date);
 	var n=lastDay-firstDay;
 	var dayW=scrW/n; // pixels/day
-	
+	/*
 	var d=new Date(transactions[0].date);
 	var t=d.getTime();
-	alert('date: '+transactions[0].date+' = '+d+' = '+t+'ms');
-	
-	alert('graph spans '+n+' days from '+firstDay+' to '+lastDay+' dayW: '+dayW);
+	console.log('date: '+transactions[0].date+' = '+d+' = '+t+'ms');
+	*/
+	console.log('graph spans '+n+' days from '+firstDay+' to '+lastDay+' dayW: '+dayW);
 	console.log('screen width: '+scrW+'; '+transactions.length+' transactions'); // canvasL is '+canvasL+'; width is '+id('canvas').width);
 	id('graphPanel').style.display='block';
-	// var margin=120; // bottom margin
 	// set vertical scale
 	var max=0; // maximum (or minimum if debit) balance
 	for(var i=0; i<transactions.length;i++) if(Math.abs(transactions[i].balance)>max) max=Math.abs(transactions[i].balance);
@@ -568,6 +565,7 @@ function drawGraph() {
 	// draw graph of balance against days/transactions
 	canvas.clearRect(0,0,scrW,scrH);
 	canvas.strokeStyle='yellow';
+	canvas.lineJoin='round';
 	canvas.lineWidth=3;
 	canvas.beginPath();
 	for(i=0;i<transactions.length;i++) {
@@ -608,7 +606,6 @@ function drawGraph() {
 	n=d.substr(8,2)+months.substr(m,3)+d.substr(2,2); // date format Mon 'YY
 	canvas.textAlign='right';
 	canvas.fillText(n,scrW-5,5);
-	alert('graph drawn; last date: '+d+'; last balance: '+transactions[transactions.length-1].balance/100);
 }
 
 // RESTORE FILE
@@ -692,17 +689,11 @@ console.log("START");
 var scrW=screen.width; // NEW CODE - SET UP FOR GRAPHS
 var scrH=screen.height;
 console.log('screen size: '+scrW+'x'+scrH+'px');
-// dayW=scrW/30; // approx 1 month visible in graph
-// console.log('dayW: '+dayW+'px');
 id("canvas").width=scrW;
 id("canvas").height=scrH;
 console.log('canvas size: '+id("canvas").width+'x'+id("canvas").height);
-// id("overlay").width=scrW;
-// id("overlay").height=scrH;
 canvas=id('canvas').getContext('2d');
-// overlay=id('overlay').getContext('2d');
 lastSave=window.localStorage.getItem('saveDate'); // date of last backup
-// console.log("last save month: "+lastSave);
 var request=window.indexedDB.open("transactionsDB");
 request.onerror=function(event) {
 	alert("indexedDB error");
@@ -810,22 +801,12 @@ request.onsuccess=function(event) {
 	  				console.log("add account "+transactions[i].account);
 	  				acNames.push(transactions[i].account);
 	  				accounts.push({name: transactions[i].account, balance: transactions[i].amount}); // NEW CODE REPLACES...
-	  				/* OLD CODE
-	   				acNames.push(transactions[i].account);
-	  				acBalances.push(transactions[i].amount);
-	  				*/
 	  			}
 	  			else { // NEW CODE FOLLOWS...
 	  				if(transactions[i].text=='gain') accounts[n].balance=transactions[i].amount; // NEW
 					else accounts[n].balance+=transactions[i].amount;
-	  				// OLD CODE: acBalances[n]+=transactions[i].amount;
 	  			}
     		}
-    		/* NOT NEEDED...
-			for(n in acNames) {
-  				accounts.push({name: acNames[n], balance: acBalances[n]});
-  			}
-  			*/
   			console.log(accounts.length+" accounts");
 			listAccounts();
 		}
