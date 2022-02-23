@@ -323,7 +323,7 @@ function openTx() {
 	toggleDialog('txDialog',true);
 	id('txAccountChooser').selectedIndex=accountNames.indexOf(tx.account);
 	id('txDateField').value=tx.date.substr(0,10);
-	// id('txAmountField').value=pp(tx.amount);
+	id('txAmountField').value=pp(tx.amount);
 	id('txTextField').value=tx.text;
 	id('txBalance').innerHTML=pp(tx.balance);
 	id('txBalance').style.color=(tx.balance<0)?'yellow':'white';
