@@ -48,7 +48,7 @@ id('main').addEventListener('touchstart', function(event) {
 })
 id('main').addEventListener('touchend', function(event) {
     var dragX=event.changedTouches[0].clientX-dragStart.x;
-    if(view=='list') { // list view
+    if((view=='list')&&(account!=null)) { // list view
     	if(dragX>50) { // drag right to decrease depth...
         	console.log("BACK");
 	    	account=null;
@@ -323,7 +323,7 @@ function openTx() {
 	toggleDialog('txDialog',true);
 	id('txAccountChooser').selectedIndex=accountNames.indexOf(tx.account);
 	id('txDateField').value=tx.date.substr(0,10);
-	id('txAmountField').value=pp(tx.amount);
+	// id('txAmountField').value=pp(tx.amount);
 	id('txTextField').value=tx.text;
 	id('txBalance').innerHTML=pp(tx.balance);
 	id('txBalance').style.color=(tx.balance<0)?'yellow':'white';
@@ -371,7 +371,7 @@ function openTx() {
   
 // LIST ACCOUNTS
 function listAccounts() {
-	console.log("list "+accounts.length+" accounts")
+	console.log("list "+accounts.length+" accounts");
   	var item = null;
 	id('list').innerHTML="";
 	var html="Accounts";
@@ -729,7 +729,6 @@ request.onsuccess=function(event) {
     		transactions.sort(function(a,b) { return Date.parse(a.date)-Date.parse(b.date)}); //chronological order
    			accounts=[];
 			var acNames=[];
-    		// NOT NEEDED: var acBalances=[];
     		var n=0;
     		for(var i in transactions) { // build list of accounts
 				var today=new Date();
