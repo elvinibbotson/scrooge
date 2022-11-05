@@ -36,7 +36,7 @@ body {
   -webkit-align-content: stretch;
       -ms-flex-line-pack: stretch;
           align-content: stretch;
-  background: "gray" }
+}
  
 input {
     height: 20px;
@@ -74,6 +74,7 @@ input[type=number] {
 
 #fileChooser {
 	margin: 20px;
+	font-size: 1.8em;
 }
 
 .check {
@@ -138,7 +139,7 @@ input[type=number] {
   font-size: 1.2em;
   margin: 10px;
 }
-  
+/* 
 #buttonBack {
     width: 24px;
     height: 24px;
@@ -149,7 +150,7 @@ input[type=number] {
     border: none;
     background: url(backButton24px.svg) center center no-repeat;
 }
-
+*/
 #main {
   padding-top: 10px;
   -webkit-box-flex: 1;
@@ -199,6 +200,7 @@ input[type=number] {
     list-style: none;
     display: flex;
     flex-direction: column;
+    background-color: #333;
     padding: 0 0.5em;
 }
 
@@ -207,7 +209,7 @@ input[type=number] {
     width: 100%;
     position: relative;
     color: white;
-    background-color: black;
+    background-color: #333;
 }
 
 .list-item {

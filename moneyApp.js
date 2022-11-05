@@ -74,7 +74,7 @@ id('main').addEventListener('touchend', function(event) {
 })
 
 // TAP HEADER - DATA MENU
-id('heading').addEventListener('click',function() {if(id('headerTitle'.innerText=='accounts')) showDialog('dataDialog',true);})
+id('heading').addEventListener('click',function() {toggleDialog('dataDialog',true);})
 
 // NEW BUTTON: create new account or transaction
 id('buttonNew').addEventListener('click',function() {
@@ -612,9 +612,9 @@ function drawGraph() {
 }
 
 // DATA
-id('backupButton').addEventListener('click',function() {showDialog('dataDialog',false); backup();});
-id('importButton').addEventListener('click',function() {showDialog('importDialog',true)});
-id('dataCancelButton').addEventListener('click',function() {showDialog('dataDialog',false)});
+id('backupButton').addEventListener('click',function() {toggleDialog('dataDialog',false); backup();});
+id('importButton').addEventListener('click',function() {toggleDialog('importDialog',true)});
+id('dataCancelButton').addEventListener('click',function() {toggleDialog('dataDialog',false)});
 
 // RESTORE BACKUP
 id("fileChooser").addEventListener('change', function() {
@@ -626,19 +626,19 @@ id("fileChooser").addEventListener('change', function() {
 	  	var data=evt.target.result;
 		var json=JSON.parse(data);
 		console.log("json: "+json);
-		var items=json.items;
-		console.log(items.length+" items loaded");
-		var dbTransaction=db.transaction('items',"readwrite");
-		var dbObjectStore=dbTransaction.objectStore('items');
-		for(var i=0;i<items.length;i++) {
-			console.log("save "+items[i].text);
-			var request=dbObjectStore.add(items[i]);
+		var logs=json.logs;
+		console.log(logs.length+" logs loaded");
+		var dbTransaction=db.transaction('logs',"readwrite");
+		var dbObjectStore=dbTransaction.objectStore('logs');
+		for(var i=0;i<logs.length;i++) {
+			console.log("save "+logs[i].text);
+			var request=dbObjectStore.add(logs[i]);
 			request.onsuccess=function(e) {
-				console.log(items.length+" items added to database");
+				console.log(logs.length+" logs added to database");
 			};
-			request.onerror=function(e) {console.log("error adding item");};
+			request.onerror=function(e) {console.log("error adding log");};
 		}
-		showDialog('importDialog',false);
+		toggleDialog('importDialog',false);
 		alert("backup imported - restart");
   	});
   	fileReader.readAsText(file);
