@@ -131,7 +131,7 @@ input[type=number] {
   background: black;
   position: fixed;
   font-size: 1.2em;
-  z-index: 1000;
+  z-index: 5;
 }
 
 #headerTitle {
@@ -139,18 +139,7 @@ input[type=number] {
   font-size: 1.2em;
   margin: 10px;
 }
-/* 
-#buttonBack {
-    width: 24px;
-    height: 24px;
-	margin-left: 10px;
-    margin-right: 30px;
-    overflow: hidden;
-    display: none;
-    border: none;
-    background: url(backButton24px.svg) center center no-repeat;
-}
-*/
+
 #main {
   padding-top: 10px;
   -webkit-box-flex: 1;
@@ -180,7 +169,7 @@ input[type=number] {
 	border: 2px solid white;
 	border-radius: 10px;
 	background: gray;
-	z-index: 50;
+	z-index: 5;
 }
 
 .round-button img {
@@ -243,6 +232,7 @@ input[type=number] {
   top: 0;
   width: 100%;
   display: none;
+  z-index: 10;
 }
 
 .dialog-title {
