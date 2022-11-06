@@ -74,7 +74,7 @@ input[type=number] {
 
 #fileChooser {
 	margin: 20px;
-	font-size: 1.8em;
+	font-size: 1.2em;
 }
 
 .check {
@@ -257,7 +257,7 @@ input[type=number] {
 }
 
 .dialog-buttons {
-  padding: 5px !important;
+  padding: 5px;
   float: right;
 }
 

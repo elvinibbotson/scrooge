@@ -74,7 +74,7 @@ id('main').addEventListener('touchend', function(event) {
 })
 
 // TAP HEADER - DATA MENU
-id('heading').addEventListener('click',function() {toggleDialog('dataDialog',true);})
+id('header').addEventListener('click',function() {toggleDialog('dataDialog',true);})
 
 // NEW BUTTON: create new account or transaction
 id('buttonNew').addEventListener('click',function() {
@@ -314,6 +314,14 @@ function toggleDialog(d,visible) {
     	}
     	else {
       		id('importDialog').style.display='none';
+    	}
+	}
+	else if(d=='dataDialog') {
+		if (visible) {
+      		id('dataDialog').style.display='block';
+    	}
+    	else {
+      		id('dataDialog').style.display='none';
     	}
 	}
 }
@@ -645,8 +653,8 @@ id("fileChooser").addEventListener('change', function() {
 });
 
 // CANCEL RESTORE
-id('cancelImportButton').addEventListener('click', function() {
-    showDialog('importDialog',false);
+id('buttonCancelImport').addEventListener('click', function() {
+    toggleDialog('importDialog',false);
 });
 
 // BACKUP
@@ -656,25 +664,25 @@ function backup() {
 	fileName+=date.getFullYear();
 	fileName+=(date.getMonth()+1);
 	fileName+=date.getDate()+".json";
-	var dbTransaction=db.transaction('items',"readwrite");
-	var dbObjectStore=dbTransaction.objectStore('items');
+	var dbTransaction=db.transaction('logs',"readwrite");
+	var dbObjectStore=dbTransaction.objectStore('logs');
 	console.log("database ready");
 	var request=dbObjectStore.openCursor();
-	var items=[];
-	dbTransaction=db.transaction('items',"readwrite");
+	var logs=[];
+	dbTransaction=db.transaction('logs',"readwrite");
 	console.log("indexedDB transaction ready");
-	dbObjectStore=dbTransaction.objectStore('items');
+	dbObjectStore=dbTransaction.objectStore('logs');
 	console.log("indexedDB objectStore ready");
 	request=dbObjectStore.openCursor();
 	request.onsuccess=function(event) {  
 		var cursor=event.target.result;  
-    		if(cursor) { // read in every item
-			    items.push(cursor.value);
+    		if(cursor) { // read in every log
+			    logs.push(cursor.value);
 			    cursor.continue();  
     		}
 		else {
-			console.log(items.length+" items - save");
-			var data={'items': items};
+			console.log(logs.length+" logs - save");
+			var data={'logs': logs};
 			var json=JSON.stringify(data);
 			var blob=new Blob([json], {type:"data:application/json"});
   			var a=document.createElement('a');
@@ -692,87 +700,6 @@ function backup() {
 		}
 	}
 }
-
-/* RESTORE FILE
-function restore() {
-    toggleDialog("importDialog", true);
-}
-
-// IMPORT FILE
-id("fileChooser").addEventListener('change', function() {
-	var file=id('fileChooser').files[0];
-	console.log("file: "+file+" name: "+file.name);
-	var fileReader=new FileReader();
-	fileReader.addEventListener('load', function(evt) {
-		console.log("file read");
-	  	var data=evt.target.result;
-		var json=JSON.parse(data);
-		console.log("json available");
-		var logs=json.logs;
-		console.log(logs.length+" logs");
-		var dbTransaction=db.transaction('logs',"readwrite");
-		var dbObjectStore=dbTransaction.objectStore('logs');
-		for(var i=0;i<logs.length;i++) {
-			console.log("add "+logs[i].text);
-			var request=dbObjectStore.add(logs[i]);
-			request.onsuccess=function(e) {
-				console.log(logs.length+" logs added to database");
-			};
-			request.onerror=function(e) {console.log("error adding log");};
-		};
-		toggleDialog('importDialog',false);
-		alert("transaction logs imported - restart");
-  	});
-  	fileReader.readAsText(file);
-})
-
-// CANCEL IMPORT
-id('buttonCancelImport').addEventListener('click', function() {
-    toggleDialog('importDialog', false);
- });
-
-// BACKUP FILE
-function backup() {
-	var fileName="money";
-	var date=new Date();
-	fileName+=date.getFullYear();
-	fileName+=(date.getMonth()+1);
-	fileName+=date.getDate()+".json";
-	var logs=[];
-	var dbTransaction=db.transaction('logs',"readwrite");
-	console.log("indexedDB transaction ready");
-	var dbObjectStore=dbTransaction.objectStore('logs');
-	console.log("indexedDB objectStore ready");
-	var request=dbObjectStore.openCursor();
-	request.onsuccess=function(event) {
-		var cursor=event.target.result;
-    	if(cursor) {
-			logs.push(cursor.value);
-			console.log("transaction "+cursor.key+", id: "+cursor.value.id+", date: "+cursor.value.date+", "+cursor.value.amount+" pence");
-			cursor.continue();
-    	}
-		else {
-			console.log(logs.length+" transaction logs - sort and save");
-    		logs.sort(function(a,b) {return Date.parse(a.date)-Date.parse(b.date)}); //chronological order
-			var data={'logs': logs};
-			var json=JSON.stringify(data);
-			var blob=new Blob([json],{type:"data:application/json"});
-  			var a=document.createElement('a');
-			a.style.display='none';
-    		var url = window.URL.createObjectURL(blob);
-			console.log("data ready to save: "+blob.size+" bytes");
-   		 	a.href= url;
-   		 	a.download = fileName;
-    		document.body.appendChild(a);
-    		a.click();
-			alert(fileName+" saved to downloads folder");
-			var today=new Date();
-			lastSave=today.getMonth();
-			window.localStorage.setItem('saveDate',lastSave); // remember month saved
-		}
-	}
-}
-*/
     
 // START-UP CODE
 console.log("START");

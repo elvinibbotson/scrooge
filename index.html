@@ -12,7 +12,7 @@
 
 <body>
 
-<header class="header">
+<header id='header' class="header">
     <div id="heading">
         <span id="headerTitle">Accounts</span>
     </div>
@@ -25,14 +25,13 @@
 	<div id='buttonNew' class='round-button'><img src='addButton24px.svg'/></div>
 </main>
   
-<div id="importDialog" class="dialog">
+<!--div id="importDialog" class="dialog">
 	<div class="dialog-title">Load from saved file</div>
 	<input type="file" id="fileChooser">
-	<div class="dialog-body">Imported data will replace any records you already have.</div>
     <div class="dialog-buttons">
 		<button id="buttonCancelImport" class="icon-button"></button>
     </div>
-</div>
+</div-->
 
 <div id="newAccountDialog" class="dialog">
     <div class="dialog-title">New account</div>
@@ -77,12 +76,10 @@
 </div>
 
 <div id="importDialog" class="dialog">
-	<div class="dialog-title">Load from saved file</div>
-	<input type="file" id="fileChooser">
-    <div class="dialog-buttons">
-		<button id="cancelImportButton" class="icon-button"></button>
-		<label for='cancelImportButton'>cancel</label>
-	</div>
+	<div class="dialog-buttons"><button id="buttonCancelImport" class="icon-button"></button></div>
+	<div class="dialog-title">Load from file<br>
+	<input type="file" id="fileChooser"></div>
+    
 </div>
 
 <script src="moneyApp.js" async></script>
