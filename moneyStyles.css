@@ -75,6 +75,7 @@ input[type=number] {
 #fileChooser {
 	margin: 20px;
 	font-size: 1.2em;
+	background-color: gray;
 }
 
 .check {
@@ -161,6 +162,7 @@ input[type=number] {
 	background-color:gray;
 	float: right;
 }
+
 .round-button {
 	display: block;
 	position: fixed;
