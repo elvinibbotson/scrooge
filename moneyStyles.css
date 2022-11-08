@@ -73,7 +73,7 @@ input[type=number] {
 }
 
 #fileChooser {
-	margin: 20px;
+	height: 30px;
 	font-size: 1.2em;
 	background-color: gray;
 }
@@ -141,16 +141,6 @@ input[type=number] {
   margin: 10px;
 }
 
-#main {
-  padding-top: 10px;
-  -webkit-box-flex: 1;
-  -webkit-flex: 1;
-      -ms-flex: 1;
-          flex: 1;
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch; }
-
 .text-button {
 	border: 2px solid white;
 	border-radius: 10px;
@@ -196,6 +186,16 @@ input[type=number] {
 }
 
 #main {
+	padding-top: 10px;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch; 
+  background: &333;
+	
     margin-top: 30px;
     width: 100%;
     position: relative;
@@ -229,17 +229,16 @@ input[type=number] {
 
 .dialog {
   background: dimgray;
-  position: fixed;
+  position: absolute;
   left: 0;
   top: 0;
+  padding: 5px;
   width: 100%;
   display: none;
   z-index: 10;
 }
 
 .dialog-title {
-  margin: 10px;
-  color: white;
   font-size: 1.2em;
   font-weight: bold;
 }
@@ -259,19 +258,15 @@ input[type=number] {
 }
 
 .dialog-buttons {
-  padding: 5px;
-  float: right;
+  margin: 10px;
 }
 
 .icon-button {
-	background-color: dimgray;
 	width: 24px;
 	height: 24px;
-	margin-left:10px;
-	margin-right: 10px;
+	padding: 12px;
 	border: none;
-	font-size: 2em;
-	font-weight: bold;
+	float: right;
 }
 
 #buttonCancelImport {

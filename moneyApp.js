@@ -659,7 +659,7 @@ id('buttonCancelImport').addEventListener('click', function() {
 
 // BACKUP
 function backup() {
-  	var fileName="lists";
+  	var fileName="money";
 	var date=new Date();
 	fileName+=date.getFullYear();
 	fileName+=(date.getMonth()+1);
