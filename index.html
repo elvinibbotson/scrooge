@@ -24,14 +24,6 @@
 	<div id='graphOverlay'><canvas id='overlay' x='0' y='0' width='100%' height='100%'></canvas></div>
 	<div id='buttonNew' class='round-button'><img src='addButton24px.svg'/></div>
 </main>
-  
-<!--div id="importDialog" class="dialog">
-	<div class="dialog-title">Load from saved file</div>
-	<input type="file" id="fileChooser">
-    <div class="dialog-buttons">
-		<button id="buttonCancelImport" class="icon-button"></button>
-    </div>
-</div-->
 
 <div id="newAccountDialog" class="dialog">
     <div class="dialog-title">New account</div>
@@ -48,15 +40,17 @@
 </div>
   
 <div id="txDialog" class="dialog">
-    <div class="dialog-body"><select id="txAccountChooser" class='chooser'></select> to/from <select id="txTransferChooser"></select><!--input type="checkbox" id="txCheckbox" class='check'/--></div>
+    <div class="dialog-body">
+    	<select id="txAccountChooser"></select> to/from <select id="txTransferChooser"></select>
+    </div>
 	<div class="dialog-body"><input type="date" id="txDateField"/><span style='float:right;'>balance <span id='txBalance'>£.pp</span></span></div>
 	<div class="dialog-body"><button id='txSign' class='sign'>+</button>&nbsp;<input type="number" id="txAmountField"/>
 	    <span style='float:right;'>monthly<input type='checkbox' class='check' id='txMonthly'/></span></div>
     <div class="dialog-body"><input type="text" id="txTextField"/></div>
     <div class="dialog-buttons">
+    	<button id="buttonSaveTx" class="icon-button"></button>
 	  	<button id="buttonDeleteTx" class="icon-button"></button>
 	  	<button id="buttonCancelTx" class="icon-button"></button>
-      	<button id="buttonSaveTx" class="icon-button"></button>  
     </div>
 </div>
 

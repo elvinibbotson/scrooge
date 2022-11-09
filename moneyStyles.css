@@ -250,7 +250,7 @@ input[type=number] {
 }
   
 .dialog-body select {
-    width: 30%;
+    width: 45%;
 	height: 32px;
 	color: white;
 	background-color: dimgray;
@@ -262,7 +262,7 @@ input[type=number] {
 }
 
 .icon-button {
-	width: 24px;
+	width: 36px;
 	height: 24px;
 	padding: 12px;
 	border: none;
