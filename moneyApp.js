@@ -424,6 +424,7 @@ function listAccounts() {
 	}
 	id('headerTitle').innerHTML=html;
 	var today=new Date();
+	console.log('this month: '+today.getMonth()+'; lastSave: '+lastSave);
 	if(today.getMonth()!=lastSave) { // backup every month
         console.log("BACKUP");
         backup();
@@ -662,7 +663,9 @@ function backup() {
   	var fileName="money";
 	var date=new Date();
 	fileName+=date.getFullYear();
+	if(date.getMonth()<9) fileName+='0'; // date format YYYYMMDD
 	fileName+=(date.getMonth()+1);
+	if(date.getDate()<10) fileName+='0';
 	fileName+=date.getDate()+".json";
 	var dbTransaction=db.transaction('logs',"readwrite");
 	var dbObjectStore=dbTransaction.objectStore('logs');
@@ -693,10 +696,11 @@ function backup() {
    			a.download=fileName;
     		document.body.appendChild(a);
     		a.click();
-			alert(fileName+" saved to downloads folder");
 			var today=new Date();
 			lastSave=today.getMonth();
+			console.log('save lastSave: '+lastSave);
 			window.localStorage.setItem('lastSave',lastSave); // remember month of backup
+			alert(fileName+" saved to downloads folder");
 		}
 	}
 }
@@ -710,7 +714,8 @@ id("canvas").width=scrW;
 id("canvas").height=scrH;
 console.log('canvas size: '+id("canvas").width+'x'+id("canvas").height);
 canvas=id('canvas').getContext('2d');
-lastSave=window.localStorage.getItem('saveDate'); // date of last backup
+lastSave=window.localStorage.getItem('lastSave'); // date of last backup
+console.log('lastSave: '+lastSave);
 var request=window.indexedDB.open("transactionsDB");
 request.onerror=function(event) {
 	alert("indexedDB error");
