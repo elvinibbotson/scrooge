@@ -34,6 +34,7 @@ var transactions=[];
 var tx=null;
 var grandTotal=0;
 var listName='Accounts';
+var currentDialog=null;
 var view='list'; // NEW
 var canvas=null; // NEW
 var lastSave=null;
@@ -48,18 +49,23 @@ id('main').addEventListener('touchstart', function(event) {
 })
 id('main').addEventListener('touchend', function(event) {
     var dragX=event.changedTouches[0].clientX-dragStart.x;
-    if((view=='list')&&(account!=null)) { // list view
-    	if(dragX>50) { // drag right to decrease depth...
+    if(view=='list') { // list view
+    	if(account && dragX>50) { // drag right to decrease depth...
         	console.log("BACK");
 	    	account=null;
 	    	toggleDialog('txDialog',false);
 	    	listAccounts();
     	}
-    	else if(dragX<-50) { // drag left to switch to graph view
-    		view='graph';
-    		id('listPanel').style.display='none';
-    		id('heading').style.display='none';
-    		drawGraph();
+    	else if(dragX<-50) { // drag left
+    	// console.log('DRAG LEFT');
+    		if(currentDialog) toggleDialog(currentDialog,false); // close an open dialog or...
+    		else if(account) { // ...switch to graph view
+    			view='graph';
+    			id('listPanel').style.display='none';
+    			id('heading').style.display='none';
+    			id('buttonNew').style.display='none';
+    			drawGraph();
+    		}
     	}
     }
     else { // graph view
@@ -69,6 +75,7 @@ id('main').addEventListener('touchend', function(event) {
     		id('graphOverlay').style.display='none';
     		id('listPanel').style.display='block';
     		id('heading').style.display='block';
+    		id('buttonNew').style.display='block';
     	}
     }
 })
@@ -90,7 +97,7 @@ id('buttonNew').addEventListener('click',function() {
 		id('newAccountBalanceField').placeholder="£.pp";
 		id('newAccountInvestmentFlag').checked=false; // NEW
 	}
-	else { // if viewing account, show transaction dialog
+	else { // if viewing account, show new transaction dialog
 		toggleDialog('txDialog',true);
 		console.log("new transaction in "+account.name+" account");
 		txIndex=null;
@@ -115,8 +122,11 @@ id('buttonNew').addEventListener('click',function() {
 		id('txMonthly').checked=false;
 		id('txMonthly').disabled=false;
 		id('txBalance').style.color='gray';
-		id("buttonDeleteTx").disabled=true;
-		id('buttonDeleteTx').style.color='gray';
+		id("buttonDeleteTx").style.display='none';
+		id('buttonAddTx').style.display='block';
+		id('buttonSaveTx').style.display='none';
+		// id("buttonDeleteTx").disabled=true;
+		// id('buttonDeleteTx').style.color='gray';
 	}
 })
 
@@ -159,11 +169,11 @@ id('buttonAddNewAccount').addEventListener('click',function() {
 	  }
 })
 
-// CANCEL NEW ACCOUNT
+/* CANCEL NEW ACCOUNT
 id('buttonCancelNewAccount').addEventListener('click', function() {
     toggleDialog('newAccountDialog', false);
 })
-
+*/
 // CHANGE TRANSACTION DATE
 id('txDateField').addEventListener('change', function() {
 	console.log("change date");
@@ -248,11 +258,11 @@ id('buttonSaveTx').addEventListener('click', function() {
 	}
 })
 
-// CANCEL NEW/EDIT TRANSACTION
+/* CANCEL NEW/EDIT TRANSACTION
 id('buttonCancelTx').addEventListener('click', function() {
     toggleDialog('txDialog', false);
 })
-
+*/
 // DELETE TRANSACTION
 id('buttonDeleteTx').addEventListener('click', function() {
 	var text=tx.text;
@@ -276,53 +286,22 @@ id('buttonDeleteConfirm').addEventListener('click', function() {
 	buildTransactionsList();
 })
 
-// CANCEL DELETE
+/* CANCEL DELETE
 id('buttonCancelDelete').addEventListener('click', function() {
     toggleDialog('deleteDialog', false);// just close the delete dialog
 })
-
+*/
 // SHOW/HIDE DIALOGS
 function toggleDialog(d,visible) {
-	id('buttonNew').style.display=(visible)? 'none':'block';
-	if(d=='newAccountDialog') { // toggle new account dialog
-	    if(visible) {
-		id("newAccountDialog").style.display='block';
-    	} 
-    	else {
-      		id("newAccountDialog").style.display='none';
-    	}
+	// id('buttonNew').style.display=(visible)? 'none':'block';
+	if(visible) {
+		if(currentDialog) id(currentDialog).style.display='none';
+		id(d).style.display='block';
+		currentDialog=d;
 	}
-	else if(d=='txDialog') { // toggle transaction dialog
-	    if(visible) {
-      		id("txDialog").style.display='block';
-    	}
-    	else {
-      		id("txDialog").style.display='none';
-    	}
-	}
-	else if(d=='deleteDialog') { // toggle DELETE dialog
-	  	if(visible) {
-      		id('deleteDialog').style.display='block';
-   		}
-   		else {
-     		id('deleteDialog').style.display='none';
-    	}
-	}
-	else if(d=='importDialog') { // toggle file chooser dialog
-	    if (visible) {
-      		id('importDialog').style.display='block';
-    	}
-    	else {
-      		id('importDialog').style.display='none';
-    	}
-	}
-	else if(d=='dataDialog') {
-		if (visible) {
-      		id('dataDialog').style.display='block';
-    	}
-    	else {
-      		id('dataDialog').style.display='none';
-    	}
+	else {
+		id(d).style.display='none';
+		currentDialog=null;
 	}
 }
   
@@ -338,6 +317,9 @@ function openTx() {
 	id('txTextField').value=tx.text;
 	id('txBalance').innerHTML=pp(tx.balance);
 	id('txBalance').style.color=(tx.balance<0)?'yellow':'white';
+	id('buttonDeleteTx').style.display='block';
+	id('buttonAddTx').style.display='none';
+	id('buttonSaveTx').style.display='block';
 	var i=0;
 	if(investment) { // NEW - NO TRANSFERS IN INVESTMENTS
 		id('txTransferChooser').disabled=true;
@@ -623,7 +605,7 @@ function drawGraph() {
 // DATA
 id('backupButton').addEventListener('click',function() {toggleDialog('dataDialog',false); backup();});
 id('importButton').addEventListener('click',function() {toggleDialog('importDialog',true)});
-id('dataCancelButton').addEventListener('click',function() {toggleDialog('dataDialog',false)});
+// id('dataCancelButton').addEventListener('click',function() {toggleDialog('dataDialog',false)});
 
 // RESTORE BACKUP
 id("fileChooser").addEventListener('change', function() {
@@ -653,11 +635,11 @@ id("fileChooser").addEventListener('change', function() {
   	fileReader.readAsText(file);
 });
 
-// CANCEL RESTORE
+/* CANCEL RESTORE
 id('buttonCancelImport').addEventListener('click', function() {
     toggleDialog('importDialog',false);
 });
-
+*/
 // BACKUP
 function backup() {
   	var fileName="money";
