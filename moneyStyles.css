@@ -123,7 +123,7 @@ input[type=number] {
 }
   
 .list {
-    margin: 0;
+    margin-top: 30px;
     list-style: none;
     display: flex;
     flex-direction: column;
@@ -194,7 +194,6 @@ input[type=number] {
 	height: 24px;
 	padding: 12px;
 	border: none;
-	/* float: right; */
 }
 
 #main {
@@ -207,8 +206,7 @@ input[type=number] {
   overflow-y: auto;
   -webkit-overflow-scrolling: touch; 
   background: &333;
-	
-    margin-top: 30px;
+    /* margin-top: 30px; */
     width: 100%;
     position: relative;
     color: white;
@@ -269,26 +267,10 @@ input[type=number] {
 	background-color: gray;
 }
 
-
-/*
-#buttonCancelImport {
-    background: url(cancelButton24px.svg) center center no-repeat;
-}
-
-#buttonCancelNewAccount {
-    background: url(cancelButton24px.svg) center center no-repeat;
-}
-*/
 #buttonAddNewAccount {
     background: url(addButton24px.svg) center center no-repeat;
     float: right;
 }
-
-/*
-#buttonCancelTx {
-    background: url(cancelButton24px.svg) center center no-repeat;
-}
-*/
 
 #buttonAddTx {
     background: url(addButton24px.svg) center center no-repeat;
@@ -304,6 +286,3 @@ input[type=number] {
     background: url(deleteButton24px.svg) center center no-repeat;
     float: left;
 }
-/*
-#buttonCancelDelete {
-    background: url(cancelButton24px.svg) center center no-repeat

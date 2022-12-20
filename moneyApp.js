@@ -179,7 +179,7 @@ id('txDateField').addEventListener('change', function() {
 	console.log("change date");
 })
 
-// TOGGLE TRANSACTION AMOUNT SIGN
+// TOGGLE TRANSACTION W SIGN
 id('txSign').addEventListener('click', function() {
 	var s=id('txSign').innerHTML;
 	console.log("toggle sign - currently "+s);
@@ -190,16 +190,25 @@ id('txSign').addEventListener('click', function() {
 	event.stopPropagation();
 })
 
-// SAVE NEW/EDITED TRANSACTION
-id('buttonSaveTx').addEventListener('click', function() {
+// SAVE NEW TRANSACTION
+id('buttonAddTx').addEventListener('click',function() {
+	saveTx(true);
+})
+
+// SAVE EDITED TRANSACTION
+id('buttonSaveTx').addEventListener('click',function() {
+	saveTx(false);
+})
+
+// ADD/SAVE TRANSACTION
+function saveTx(adding) {
 	tx.account=accountNames[id('txAccountChooser').selectedIndex];
-	// tx.checked=id('txCheckbox').checked;
 	tx.date=id('txDateField').value;
 	tx.amount=Math.round(id('txAmountField').value*100);
 	if(id('txSign').innerHTML=="-") tx.amount*=-1;
 	if(id('txSign').innerHTML=="=") tx.text='gain'; // NEW - amount IS INVESTMENT VALUE
 	else tx.text=id('txTextField').value;
-	if(investment) transfer=null; // NEW
+	if(investment) transfer=null;
 	else {
 		var i=id('txTransferChooser').selectedIndex;
 		var transfer=id('txTransferChooser').options[i].text;
@@ -209,13 +218,12 @@ id('buttonSaveTx').addEventListener('click', function() {
 	}
 	tx.monthly=id('txMonthly').checked;
     toggleDialog('txDialog',false);
-	console.log("save transaction - date: "+tx.date+" "+tx.amount+"p - "+tx.text+" app.txIndex: "+txIndex);
-	// save new/amended transaction to indexedDB
-	var dbTransaction=db.transaction('logs',"readwrite");
+    console.log("save transaction - date: "+tx.date+" "+tx.amount+"p - "+tx.text+" app.txIndex: "+txIndex);
+    var dbTransaction=db.transaction('logs',"readwrite");
 	console.log("indexedDB transaction ready");
 	var dbObjectStore=dbTransaction.objectStore('logs');
 	console.log("indexedDB objectStore ready");
-	if(txIndex==null) { // add new transaction
+	if(adding) { // add new transaction
 		var earliest=transactions[0].date; // date of earliest transaction inaccount
 		console.log("add new transaction date "+tx.date+" - oldest is "+earliest);
 		if(tx.date<earliest) alert("TOO EARLY");
@@ -228,10 +236,7 @@ id('buttonSaveTx').addEventListener('click', function() {
 			request.onerror=function(event) {console.log("error adding new transaction");};
 		}
 	}
-	else {
-		console.log("save amended transaction# "+txIndex+"("+transactions[txIndex]+"): "+tx.account+"/"+tx.date+"/"+tx.amount+"p/"+tx.text);
-		transactions[txIndex]=tx;
-		// put amended transaction in indexedDB
+	else { // update existing transaction
 		var request=dbObjectStore.put(tx); // update transaction in database
 		request.onsuccess=function(event)  {
 			console.log("transaction "+tx.id+" updated");
@@ -256,25 +261,12 @@ id('buttonSaveTx').addEventListener('click', function() {
 		};
 		request.onerror=function(event) {console.log("error adding reciprocal transaction");};
 	}
-})
+}
 
-/* CANCEL NEW/EDIT TRANSACTION
-id('buttonCancelTx').addEventListener('click', function() {
-    toggleDialog('txDialog', false);
-})
-*/
 // DELETE TRANSACTION
 id('buttonDeleteTx').addEventListener('click', function() {
 	var text=tx.text;
 	console.log("delete transaction "+text);
-	toggleDialog("deleteDialog", true);
-	id('deleteText').innerHTML=text;
-	toggleDialog("txDialog",false);
-})
-
-// CONFIRM DELETE
-id('buttonDeleteConfirm').addEventListener('click', function() {
-	console.log("delete transaction "+txIndex+" - "+tx.text);
 	transactions.splice(txIndex,1);
 	var dbTransaction=db.transaction("logs","readwrite");
 	console.log("indexedDB transaction ready");
@@ -282,15 +274,10 @@ id('buttonDeleteConfirm').addEventListener('click', function() {
 	var request=dbObjectStore.delete(tx.id);
 	request.onsuccess=function(event) {console.log("transaction "+tx.id+" deleted");};
 	request.onerror=function(event) {console.log("error deleting transaction "+tx.id);};
-	toggleDialog('deleteDialog', false);
+	toggleDialog("txDialog",false);
 	buildTransactionsList();
 })
 
-/* CANCEL DELETE
-id('buttonCancelDelete').addEventListener('click', function() {
-    toggleDialog('deleteDialog', false);// just close the delete dialog
-})
-*/
 // SHOW/HIDE DIALOGS
 function toggleDialog(d,visible) {
 	// id('buttonNew').style.display=(visible)? 'none':'block';
@@ -635,11 +622,6 @@ id("fileChooser").addEventListener('change', function() {
   	fileReader.readAsText(file);
 });
 
-/* CANCEL RESTORE
-id('buttonCancelImport').addEventListener('click', function() {
-    toggleDialog('importDialog',false);
-});
-*/
 // BACKUP
 function backup() {
   	var fileName="money";
