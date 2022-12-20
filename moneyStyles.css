@@ -63,6 +63,10 @@ input[type=number] {
     font-size: 1.2em;
 }
 
+select {
+	width: 30px;
+}
+
 .check {
     width: 24px;
 	height: 24px;
@@ -157,7 +161,7 @@ input[type=number] {
 
 .dialog {
   background: dimgray;
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 0;
   padding: 5px;
