@@ -108,25 +108,22 @@ id('buttonNew').addEventListener('click',function() {
 		console.log("account #"+n);
 		id('txAccountChooser').selectedIndex=n;
 		id('txAccountChooser').disabled=false;
-		// var d=new Date().toISOString();
+		id('txTransferChooser').disabled=(investment)?true:false; // transfer doesn't apply for investment accounts
 		id('txDateField').value=d.substr(0,10);
 		id('txDateField').disabled=false;
 		id('txSign').innerHTML=(investment)?'=':'-';
 		id('txAmountField').value=null;
 		id('txAmountField').placeholder="£.pp";
 		console.log("set text to blank");
-		id('txTextField').value="";
-		id('txTextField').disabled=false;
+		id('txTextField').value=(investment)?"current value":"";
+		id('txTextField').disabled=(investment)?true:false; // standard text 'gain' for investment accounts
 		id('txTransferChooser').selectedIndex=0;
-		id('txTransferChooser').disabled=investment;  // NEW - WAS id('txTransferChooser').disabled=false;
 		id('txMonthly').checked=false;
-		id('txMonthly').disabled=false;
+		id('txMonthly').disabled=(investment)?true:false; // cannot have monthly investment gains
 		id('txBalance').style.color='gray';
 		id("buttonDeleteTx").style.display='none';
 		id('buttonAddTx').style.display='block';
 		id('buttonSaveTx').style.display='none';
-		// id("buttonDeleteTx").disabled=true;
-		// id('buttonDeleteTx').style.color='gray';
 	}
 })
 
@@ -206,7 +203,7 @@ function saveTx(adding) {
 	tx.date=id('txDateField').value;
 	tx.amount=Math.round(id('txAmountField').value*100);
 	if(id('txSign').innerHTML=="-") tx.amount*=-1;
-	if(id('txSign').innerHTML=="=") tx.text='gain'; // NEW - amount IS INVESTMENT VALUE
+	if(id('txSign').innerHTML=="=") tx.text='gain';
 	else tx.text=id('txTextField').value;
 	if(investment) transfer=null;
 	else {
@@ -299,6 +296,7 @@ function openTx() {
 	console.log("open transaction: "+txIndex+"; "+tx.text);
 	toggleDialog('txDialog',true);
 	id('txAccountChooser').selectedIndex=accountNames.indexOf(tx.account);
+	
 	id('txDateField').value=tx.date.substr(0,10);
 	id('txAmountField').value=pp(tx.amount);
 	id('txTextField').value=tx.text;
@@ -308,11 +306,9 @@ function openTx() {
 	id('buttonAddTx').style.display='none';
 	id('buttonSaveTx').style.display='block';
 	var i=0;
-	if(investment) { // NEW - NO TRANSFERS IN INVESTMENTS
-		id('txTransferChooser').disabled=true;
-		id('txMonthly').disabled=true;
-	}
-	else {
+	id('txTransferChooser').disabled=(investment)?true:false;
+	id('txMonthly').disabled=(investment)?true:false;
+	if(!investment) {
 		while(id('txTransferChooser').options[i].text!=tx.transfer) i++;
 		id('txTransferChooser').selectedIndex=i;
 		id('txMonthly').checked=tx.monthly;
@@ -321,7 +317,7 @@ function openTx() {
 	id('txSign').innerHTML=(tx.amount<0)?"-":"+";
 	if(tx.text=='gain') { // NEW CODE...
 		id('txSign').innerHTML='=';
-		id('txTextField').value='';
+		id('txTextField').value='current value';
 		id('txTextField').disabled=true;
 	}
 	else {
