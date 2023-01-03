@@ -676,7 +676,7 @@ console.log('canvas size: '+id("canvas").width+'x'+id("canvas").height);
 canvas=id('canvas').getContext('2d');
 lastSave=window.localStorage.getItem('lastSave'); // date of last backup
 console.log('lastSave: '+lastSave);
-var request=window.indexedDB.open("transactionsDB");
+var request=window.indexedDB.open("transactionsDB",2);
 request.onerror=function(event) {
 	alert("indexedDB error");
 };
