@@ -683,7 +683,11 @@ request.onerror=function(event) {
 request.onupgradeneeded=function(event) {
 	console.log("UPGRADE!")
 	db=event.currentTarget.result;
-	var dbObjectStore=db.createObjectStore("logs",{ keyPath:"id",autoIncrement:true });
+	if(!db.objectStoreNames.contains('logs')) {
+		var dbObjectStore=db.createObjectStore("logs",{ keyPath:"id",autoIncrement:true });
+		console.log("logs store created");
+	}
+	else console.log("logs store exists");
 	console.log("database ready");
 };
 request.onsuccess=function(event) {
