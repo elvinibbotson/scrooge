@@ -283,10 +283,12 @@ function toggleDialog(d,visible) {
 		if(currentDialog) id(currentDialog).style.display='none';
 		id(d).style.display='block';
 		currentDialog=d;
+		id('buttonNew').style.display='none';
 	}
 	else {
 		id(d).style.display='none';
 		currentDialog=null;
+		id('buttonNew').style.display='block';
 	}
 }
   
