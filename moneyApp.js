@@ -83,6 +83,12 @@ id('main').addEventListener('touchend', function(event) {
 // TAP HEADER - DATA MENU
 id('header').addEventListener('click',function() {toggleDialog('dataDialog',true);})
 
+// DISPLAY MESSAGE
+function display(message) {
+	id('message').innerText=message;
+	showDialog('messageDialog',true);
+}
+
 // NEW BUTTON: create new account or transaction
 id('buttonNew').addEventListener('click',function() {
 	console.log("new");
@@ -166,11 +172,6 @@ id('buttonAddNewAccount').addEventListener('click',function() {
 	  }
 })
 
-/* CANCEL NEW ACCOUNT
-id('buttonCancelNewAccount').addEventListener('click', function() {
-    toggleDialog('newAccountDialog', false);
-})
-*/
 // CHANGE TRANSACTION DATE
 id('txDateField').addEventListener('change', function() {
 	console.log("change date");
@@ -223,7 +224,7 @@ function saveTx(adding) {
 	if(adding) { // add new transaction
 		var earliest=transactions[0].date; // date of earliest transaction inaccount
 		console.log("add new transaction date "+tx.date+" - oldest is "+earliest);
-		if(tx.date<earliest) alert("TOO EARLY");
+		if(tx.date<earliest) display("TOO EARLY");
 		else { // add new transaction to indexedDB
 			var request=dbObjectStore.add(tx);
 			request.onsuccess=function(event) {
@@ -254,7 +255,7 @@ function saveTx(adding) {
 		var request=dbObjectStore.add(t);
 		request.onsuccess = function(event) {
 			console.log("reciprocal transaction added in "+transfer+" account");
-			alert("transaction added to "+transfer+" account");
+			display("transaction added to "+transfer+" account");
 		};
 		request.onerror=function(event) {console.log("error adding reciprocal transaction");};
 	}
@@ -613,7 +614,7 @@ id("fileChooser").addEventListener('change', function() {
 			request.onerror=function(e) {console.log("error adding log");};
 		}
 		toggleDialog('importDialog',false);
-		alert("backup imported - restart");
+		display("backup imported - restart");
   	});
   	fileReader.readAsText(file);
 });
@@ -660,7 +661,7 @@ function backup() {
 			lastSave=today.getMonth();
 			console.log('save lastSave: '+lastSave);
 			window.localStorage.setItem('lastSave',lastSave); // remember month of backup
-			alert(fileName+" saved to downloads folder");
+			display(fileName+" saved to downloads folder");
 		}
 	}
 }
@@ -774,7 +775,7 @@ request.onsuccess=function(event) {
 					if(transfer) { // IF MONTHLY TRANSACTION IS TRANSFER CREATE RECIPROCAL TRANSACTION
 						request=dbObjectStore.add(transferTX);
 						request.onsuccess=function(event) {
-							alert("reciprocal transaction created to match repeated transaction");
+							display("reciprocal transaction created to match repeated transaction");
 						}
 						request.onerror=function(event) {
 							alert("error creating repeated reciprocal transaction");
