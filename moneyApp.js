@@ -86,7 +86,7 @@ id('header').addEventListener('click',function() {toggleDialog('dataDialog',true
 // DISPLAY MESSAGE
 function display(message) {
 	id('message').innerText=message;
-	showDialog('messageDialog',true);
+	toggleDialog('messageDialog',true);
 }
 
 // NEW BUTTON: create new account or transaction
@@ -414,7 +414,7 @@ function openAccount() {
     		if(cursor) {
 				if(cursor.value.account==account.name) {
 					transactions.push(cursor.value);
-					console.log("transaction "+cursor.key+", id: "+cursor.value.id+", date: "+cursor.value.date+", "+cursor.value.amount+" pence, monthly:"+cursor.value.monthly);
+					// console.log("transaction "+cursor.key+", id: "+cursor.value.id+", date: "+cursor.value.date+", "+cursor.value.amount+" pence, monthly:"+cursor.value.monthly);
 				}
 				cursor.continue();
     		}
@@ -486,7 +486,6 @@ function buildTransactionsList() {
 		itemText.style='margin-right:50px;';
 		itemText.index=i;
 		d=tx.date;
-		console.log("date: "+d);
 		mon=parseInt(d.substr(5,2))-1;
 		mon*=3;
 		d=d.substr(8,2)+" "+months.substr(mon,3); // +" "+d.substr(2,2);
