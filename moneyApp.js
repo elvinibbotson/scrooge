@@ -488,10 +488,10 @@ function buildTransactionsList() {
 		d=tx.date;
 		mon=parseInt(d.substr(5,2))-1;
 		mon*=3;
-		d=d.substr(8,2)+" "+months.substr(mon,3); // +" "+d.substr(2,2);
-		html="<span class='date'>"+d+"</span> "+trim(tx.text,10);
-		var a=tx.amount; // NEW
-		if(investment && tx.text=='gain') a=tx.amount-transactions[i-1].balance; // NEW LIST GAIN/LOSS FROM PREVIOUS BALANCE
+		d=d.substr(8,2)+" "+months.substr(mon,3)+" "+d.substr(2,2);
+		html="<span class='date'>"+d+"</span><span class='comment'>"+trim(tx.text,10)+"</span>";
+		var a=tx.amount;
+		if(investment && tx.text=='gain') a=tx.amount-transactions[i-1].balance;
 		if(a<0) html+="<span class='amount-debit'>";
 		else html+="<span class='amount'>";
 		html+=pp(a);

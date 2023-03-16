@@ -149,6 +149,12 @@ select {
 	font-size: 0.8em;
 }
 
+.comment {
+    position: absolute;
+    left: 25%;
+    /* width: 20%;*/
+}
+
 .amount {
 	float: right;
 	color: white;
