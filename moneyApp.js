@@ -33,6 +33,7 @@ var investment=false; // NEW FLAG
 var transactions=[];
 var tx=null;
 var grandTotal=0;
+var totals=[];
 var listName='Accounts';
 var currentDialog=null;
 var view='list'; // NEW
@@ -59,12 +60,19 @@ id('main').addEventListener('touchend', function(event) {
     	else if(dragX<-50) { // drag left
     	// console.log('DRAG LEFT');
     		if(currentDialog) toggleDialog(currentDialog,false); // close an open dialog or...
-    		else if(account) { // ...switch to graph view
+    		else if(account) { // ...switch to account graph view
     			view='graph';
     			id('listPanel').style.display='none';
     			id('heading').style.display='none';
     			id('buttonNew').style.display='none';
     			drawGraph();
+    		}
+    		else { // NEW - DRAW GRAPH OF GRAND TOTALS
+    			view='totals';
+    			id('listPanel').style.display='none';
+    			id('heading').style.display='none';
+    			id('buttonNew').style.display='none';
+    			drawTotals();
     		}
     	}
     }
@@ -509,22 +517,17 @@ function buildTransactionsList() {
 	 id('headerTitle').innerHTML=html;
 }
 
-// NEW - DRAW GRAPH
+// DRAW ACCOUNT GRAPH
 function drawGraph() {
-	console.log('GRAPH');
+	console.log('ACCOUNT GRAPH');
 	var firstDay=day(transactions[0].date); // whole days
 	var lastDay=day(transactions[transactions.length-1].date);
 	var n=lastDay-firstDay;
 	var dayW=scrW/n; // pixels/day
-	/*
-	var d=new Date(transactions[0].date);
-	var t=d.getTime();
-	console.log('date: '+transactions[0].date+' = '+d+' = '+t+'ms');
-	*/
 	console.log('graph spans '+n+' days from '+firstDay+' to '+lastDay+' dayW: '+dayW);
 	console.log('screen width: '+scrW+'; '+transactions.length+' transactions'); // canvasL is '+canvasL+'; width is '+id('canvas').width);
 	id('graphPanel').style.display='block';
-	// set vertical scale
+	/* set vertical scale
 	var max=0; // maximum (or minimum if debit) balance
 	for(var i=0; i<transactions.length;i++) if(Math.abs(transactions[i].balance)>max) max=Math.abs(transactions[i].balance);
 	max/=100;
@@ -541,16 +544,20 @@ function drawGraph() {
 	while(m<max) m+=n; // m is next multiple of £10, £100, £1000, etc above max
 	ppp=scrH/2/m; // pixels per pound
 	console.log(ppp+' px/£');
+	*/
 	// draw graph of balance against days/transactions
+	var h=scrH/12;
 	canvas.clearRect(0,0,scrW,scrH);
 	canvas.strokeStyle='yellow';
 	canvas.lineJoin='round';
 	canvas.lineWidth=3;
 	canvas.beginPath();
 	for(i=0;i<transactions.length;i++) {
-		var val=transactions[i].balance/100;
+		// var val=transactions[i].balance/100;
+		var val=transactions[i].balance/5000000;
 		var x=(day(transactions[i].date)-firstDay)*dayW;
-		var y=scrH/2-val*ppp; // £0.00 is at mid-screen
+		// var y=scrH/2-val*ppp; // £0.00 is at mid-screen
+		var y=scrH-3*h-val*h;
 		console.log('balance: '+val+'point '+i+': '+x+','+y);
 		if(i<1) canvas.moveTo(x,y);
 		else canvas.lineTo(x,y);
@@ -560,6 +567,7 @@ function drawGraph() {
     canvas.font='20px Monospace';
     canvas.fillStyle='white';
     canvas.textAlign='left';
+    /*
     canvas.textBaseline='middle';
     y=0;
     var unit=Math.pow(10,d-1); // 1, 10, 100, 1000,...
@@ -585,6 +593,48 @@ function drawGraph() {
 	n=d.substr(8,2)+months.substr(m,3)+d.substr(2,2); // date format Mon 'YY
 	canvas.textAlign='right';
 	canvas.fillText(n,scrW-5,5);
+	*/
+	
+	canvas.strokeStyle='white';
+	canvas.lineWidth=1;
+	canvas.beginPath();
+	for(i=1;i<12;i++) {
+		canvas.moveTo(0,i*h);
+		canvas.lineTo(scrW,i*h);
+	}
+	canvas.stroke();
+	for(i=-2;i<10;i++) canvas.fillText((i*50)+'k',5,scrH-3*h-i*h);
+}
+
+// NEW - TOTALS GRAPH
+function drawTotals() {
+	console.log('TOTALS GRAPH');
+	id('graphPanel').style.display='block';
+	canvas.clearRect(0,0,scrW,scrH);
+	canvas.fillStyle='silver';
+	canvas.strokeStyle='white';
+	canvas.font='20px Monospace';
+	canvas.textAlign='left';
+	var w=scrW/12;
+	var h=scrH/12;
+	var offset=11-lastSave; // latest month is at right of screen
+	for(var i=0;i<12;i++) {
+		console.log('total '+i+': '+totals[i]);
+		var x=(i+offset)%12*w;
+		var y=totals[i]/10000000*h; // pence to multiples of £100k
+		console.log('bar height: '+y+' at '+x);
+		canvas.fillRect(x,11*h,w,-y);
+	}
+	canvas.lineWidth=1;
+	canvas.beginPath();
+	for(i=1;i<12;i++) {
+		canvas.moveTo(0,i*h);
+		canvas.lineTo(scrW,i*h);
+	}
+	canvas.stroke();
+	canvas.fillStyle='white';
+	for(i=1;i<12;i++) canvas.fillText((i*100)+'k',5,i*h-2);
+	for(i=0;i<12;i++) canvas.fillText(months.substr(i*3,1),i*w+10,scrH-30);
 }
 
 // DATA
@@ -662,6 +712,10 @@ function backup() {
 			lastSave=today.getMonth();
 			console.log('save lastSave: '+lastSave);
 			window.localStorage.setItem('lastSave',lastSave); // remember month of backup
+			var month=parseInt(lastSave);
+			console.log('save total '+grandTotal+' for month '+month);
+			totals[month]=grandTotal; // saves grand total for each monthly backup
+			window.localStorage.setItem('totals',JSON.stringify(totals));
 			display(fileName+" saved to downloads folder");
 		}
 	}
@@ -676,8 +730,12 @@ id("canvas").width=scrW;
 id("canvas").height=scrH;
 console.log('canvas size: '+id("canvas").width+'x'+id("canvas").height);
 canvas=id('canvas').getContext('2d');
-lastSave=window.localStorage.getItem('lastSave'); // date of last backup
+lastSave=window.localStorage.getItem('lastSave'); // month of last backup
 console.log('lastSave: '+lastSave);
+totals=JSON.parse(window.localStorage.getItem('totals')); // grand totals for each monthly backup
+console.log('totals: '+totals);
+if(totals==null) totals=[];
+console.log(totals.length+' totals');
 var request=window.indexedDB.open("transactionsDB",2);
 request.onerror=function(event) {
 	alert("indexedDB error");
@@ -789,7 +847,7 @@ request.onsuccess=function(event) {
 	  				acNames.push(transactions[i].account);
 	  				accounts.push({name: transactions[i].account, balance: transactions[i].amount}); // NEW CODE REPLACES...
 	  			}
-	  			else { // NEW CODE FOLLOWS...
+	  			else {
 	  				if(transactions[i].text=='gain') accounts[n].balance=transactions[i].amount; // NEW
 					else accounts[n].balance+=transactions[i].amount;
 	  			}
