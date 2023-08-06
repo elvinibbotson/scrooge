@@ -527,24 +527,6 @@ function drawGraph() {
 	console.log('graph spans '+n+' days from '+firstDay+' to '+lastDay+' dayW: '+dayW);
 	console.log('screen width: '+scrW+'; '+transactions.length+' transactions'); // canvasL is '+canvasL+'; width is '+id('canvas').width);
 	id('graphPanel').style.display='block';
-	/* set vertical scale
-	var max=0; // maximum (or minimum if debit) balance
-	for(var i=0; i<transactions.length;i++) if(Math.abs(transactions[i].balance)>max) max=Math.abs(transactions[i].balance);
-	max/=100;
-	console.log('maximum balance: £'+max);
-	var d=0; // no of digits
-	n=1;
-	while(n<max) { // count digits
-		n*=10;
-		d++;
-	}
-	console.log(d+' digits'); 
-	n/=10; // determine scale limit
-	var m=n;
-	while(m<max) m+=n; // m is next multiple of £10, £100, £1000, etc above max
-	ppp=scrH/2/m; // pixels per pound
-	console.log(ppp+' px/£');
-	*/
 	// draw graph of balance against days/transactions
 	var h=scrH/12;
 	canvas.clearRect(0,0,scrW,scrH);
@@ -567,34 +549,6 @@ function drawGraph() {
     canvas.font='20px Monospace';
     canvas.fillStyle='white';
     canvas.textAlign='left';
-    /*
-    canvas.textBaseline='middle';
-    y=0;
-    var unit=Math.pow(10,d-1); // 1, 10, 100, 1000,...
-    var n=0;
-    console.log('m: '+m+' digits: '+d+' unit: '+unit);
-    while(n<m) { // from 0 to >max
-    	// console.log('write '+n+' at '+x+','+y);
-    	canvas.fillText(-n,5,scrH/2-y);
-    	canvas.fillText(n,5,scrH/2+y);
-    	n+=unit;
-    	y-=unit*ppp;
-    }
-    d=transactions[0].date;
-    m=parseInt(d.substr(5,2))-1;
-	m*=3;
-	n=d.substr(8,2)+months.substr(m,3)+d.substr(2,2); // date format Mon 'YY
-	console.log('print '+n);
-	canvas.textBaseline='top';
-	canvas.fillText(n,5,5);
-	d=transactions[transactions.length-1].date;
-    m=parseInt(d.substr(5,2))-1;
-	m*=3;
-	n=d.substr(8,2)+months.substr(m,3)+d.substr(2,2); // date format Mon 'YY
-	canvas.textAlign='right';
-	canvas.fillText(n,scrW-5,5);
-	*/
-	
 	canvas.strokeStyle='white';
 	canvas.lineWidth=1;
 	canvas.beginPath();
@@ -603,10 +557,10 @@ function drawGraph() {
 		canvas.lineTo(scrW,i*h);
 	}
 	canvas.stroke();
-	for(i=-2;i<10;i++) canvas.fillText((i*50)+'k',5,scrH-3*h-i*h);
+	for(i=-2;i<10;i++) canvas.fillText((i*50)+'k',5,scrH-3*h-i*h-2);
 }
 
-// NEW - TOTALS GRAPH
+//  TOTALS GRAPH
 function drawTotals() {
 	console.log('TOTALS GRAPH');
 	id('graphPanel').style.display='block';
@@ -627,13 +581,13 @@ function drawTotals() {
 	}
 	canvas.lineWidth=1;
 	canvas.beginPath();
-	for(i=1;i<12;i++) {
+	for(i=1;i<11;i++) {
 		canvas.moveTo(0,i*h);
 		canvas.lineTo(scrW,i*h);
 	}
 	canvas.stroke();
 	canvas.fillStyle='white';
-	for(i=1;i<12;i++) canvas.fillText((i*100)+'k',5,i*h-2);
+	for(i=1;i<12;i++) canvas.fillText((i*100)+'k',5,scrH-i*h-h-2);
 	for(i=0;i<12;i++) canvas.fillText(months.substr(i*3,1),i*w+10,scrH-30);
 }
 
