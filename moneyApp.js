@@ -63,14 +63,12 @@ id('main').addEventListener('touchend', function(event) {
     		else if(account) { // ...switch to account graph view
     			view='graph';
     			id('listPanel').style.display='none';
-    			id('heading').style.display='none';
     			id('buttonNew').style.display='none';
     			drawGraph();
     		}
     		else { // NEW - DRAW GRAPH OF GRAND TOTALS
     			view='totals';
     			id('listPanel').style.display='none';
-    			id('heading').style.display='none';
     			id('buttonNew').style.display='none';
     			drawTotals();
     		}
