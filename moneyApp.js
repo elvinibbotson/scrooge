@@ -586,7 +586,8 @@ function drawTotals() {
 	canvas.stroke();
 	canvas.fillStyle='white';
 	for(i=1;i<12;i++) canvas.fillText((i*100)+'k',5,scrH-i*h-h-2);
-	for(i=0;i<12;i++) canvas.fillText(months.substr(i*3,1),i*w+10,scrH-30);
+	var d=12-new Date().getMonth();
+	for(i=0;i<12;i++) canvas.fillText(months.substr(i*3,1),(((i+d)%12)*w)+10,scrH-30);
 }
 
 // DATA
@@ -687,6 +688,13 @@ console.log('lastSave: '+lastSave);
 totals=JSON.parse(window.localStorage.getItem('totals')); // grand totals for each monthly backup
 console.log('totals: '+totals);
 if(totals==null) totals=[];
+// TEMPORARY FIX
+else { // FIX AUGUST TOTAL
+	totals[7]-=10000000;
+	window.localStorage.setItem('totals',JSON.stringify(totals));
+	alert('totals adjusted - August:'+totals[7]);
+}
+// END
 console.log(totals.length+' totals');
 var request=window.indexedDB.open("transactionsDB",2);
 request.onerror=function(event) {
