@@ -689,10 +689,10 @@ totals=JSON.parse(window.localStorage.getItem('totals')); // grand totals for ea
 console.log('totals: '+totals);
 if(totals==null) totals=[];
 // TEMPORARY FIX
-else { // FIX AUGUST TOTAL
-	totals[7]-=10000000;
+else { // FIX SEPTEMBER TOTAL
+	totals[8]-=10000000;
 	window.localStorage.setItem('totals',JSON.stringify(totals));
-	alert('totals adjusted - August:'+totals[7]);
+	alert('totals adjusted - September:'+totals[8]);
 }
 // END
 console.log(totals.length+' totals');
