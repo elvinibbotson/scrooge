@@ -692,7 +692,7 @@ if(totals==null) totals=[];
 else {
 	for(var i=0;i<12;i++) {
 		if(totals[i]<0) totals[i]+=10000000;
-		else if(total[i]>80000000) totals[i]-=10000000;
+		else if(TOTALS[i]>80000000) totals[i]-=10000000;
 	}
 	alert('totals:'+JSON.stringify(totals));
 	window.localStorage.setItem('totals',JSON.stringify(totals));
