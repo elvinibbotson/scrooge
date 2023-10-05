@@ -21,7 +21,7 @@ function day(d) { // get day number from date d
 	return Math.floor(new Date(d).getTime()/86400000);
 }
 
-var scrW; // NEW - screen size
+var scrW;
 var scrH;
 var dragStart={};
 var db=null;
@@ -29,15 +29,15 @@ var accounts=[];
 var accountNames=[];
 var account=null;
 var acIndex=null;
-var investment=false; // NEW FLAG
+var investment=false;
 var transactions=[];
 var tx=null;
 var grandTotal=0;
 var totals=[];
 var listName='Accounts';
 var currentDialog=null;
-var view='list'; // NEW
-var canvas=null; // NEW
+var view='list';
+var canvas=null;
 var lastSave=null;
 var months="JanFebMarAprMayJunJulAugSepOctNovDec";
 
@@ -691,7 +691,7 @@ if(totals==null) totals=[];
 // TEMPORARY FIX
 else {
 	for(var i=0;i<12;i++) {
-		if(totals[i]<0) totals[i]+=10000000;
+		if(totals[i]<0) totals[i]=null;
 		else if(totals[i]>80000000) totals[i]-=10000000;
 	}
 	alert('totals:'+JSON.stringify(totals));
