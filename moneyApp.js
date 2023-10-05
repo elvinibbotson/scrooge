@@ -587,7 +587,7 @@ function drawTotals() {
 	canvas.fillStyle='white';
 	for(i=1;i<12;i++) canvas.fillText((i*100)+'k',5,scrH-i*h-h-2);
 	var d=12-new Date().getMonth();
-	for(i=0;i<12;i++) canvas.fillText(months.substr(i*3,1),(((i+d)%12)*w)+10,scrH-30);
+	for(i=0;i<12;i++) canvas.fillText(months.substr(i*3,1),(((i+d)%12)*w)+10,36);
 }
 
 // DATA
@@ -688,7 +688,7 @@ console.log('lastSave: '+lastSave);
 totals=JSON.parse(window.localStorage.getItem('totals')); // grand totals for each monthly backup
 console.log('totals: '+totals);
 if(totals==null) totals=[];
-// TEMPORARY FIX
+/* TEMPORARY FIX
 else {
 	for(var i=0;i<12;i++) {
 		if(totals[i]<0) totals[i]=null;
@@ -697,7 +697,7 @@ else {
 	alert('totals:'+JSON.stringify(totals));
 	window.localStorage.setItem('totals',JSON.stringify(totals));
 }
-// END
+*/
 console.log(totals.length+' totals');
 var request=window.indexedDB.open("transactionsDB",2);
 request.onerror=function(event) {
