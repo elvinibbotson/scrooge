@@ -334,12 +334,13 @@ function openTx() {
 		id('txTextField').disabled=false;
 	}
 	if(tx.text=="B/F") { // can only change date or amount of earliest B/F item
-		console.log("limit edits");
+		var n=transactions.length;
+		console.log("limit edits txIndex:"+txIndex+" "+n+" items");
 		id('txAccountChooser').disabled=true;
 		id('txTextField').disabled=true;
 		id('txTransferChooser').disabled=true;
 		id('txMonthly').disabled=true;
-		if(transactions.length>1) { // can only delete B/F if it is only transaction - effectively deletes account
+		if((n>1)&&(txIndex==(n-1))) { // can only delete B/F if it is only transaction - effectively deletes account
 		    id('buttonDeleteTx').disabled=true;
 		}
 	}
