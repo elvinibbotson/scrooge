@@ -38,7 +38,10 @@ var listName='Accounts';
 var currentDialog=null;
 var view='list';
 var canvas=null;
-var lastSave=null;
+var today;
+var thisWeek; // weeks since 1st Sept 1970
+var backupWeek=0; // week of last backup;
+var changed=false; // changes since last backup?
 var months="JanFebMarAprMayJunJulAugSepOctNovDec";
 
 // DRAG LEFT/RIGHT ACTIONS
@@ -206,6 +209,7 @@ id('buttonSaveTx').addEventListener('click',function() {
 
 // ADD/SAVE TRANSACTION
 function saveTx(adding) {
+	window.localStorage.setItem('changed',true); // assume saving means data changed
 	tx.account=accountNames[id('txAccountChooser').selectedIndex];
 	tx.date=id('txDateField').value;
 	tx.amount=Math.round(id('txAmountField').value*100);
@@ -398,9 +402,10 @@ function listAccounts() {
 		html="Accounts <i>"+pp(grandTotal)+"</i>";
 	}
 	id('headerTitle').innerHTML=html;
-	var today=new Date();
-	console.log('this month: '+today.getMonth()+'; lastSave: '+lastSave);
-	if(today.getMonth()!=lastSave) { // backup every month
+	today=new Date();
+	thisWeek=Math.floor(today.getTime()/604800000); // weeks since Jan 1st 1970
+	console.log('this week: '+thisWeek+'; backupWeek: '+backupWeek);
+	if(thisWeek>backupWeek && changed) { // backup every week if changed
         console.log("BACKUP");
         backup();
     }
@@ -418,14 +423,14 @@ function openAccount() {
 	var request=dbObjectStore.openCursor();
 	request.onsuccess=function(event) {
 		var cursor=event.target.result;
-    		if(cursor) {
+    	if(cursor) {
 				if(cursor.value.account==account.name) {
 					transactions.push(cursor.value);
 					// console.log("transaction "+cursor.key+", id: "+cursor.value.id+", date: "+cursor.value.date+", "+cursor.value.amount+" pence, monthly:"+cursor.value.monthly);
 				}
 				cursor.continue();
     		}
-			else {
+		else {
 				console.log(transactions.length+" account transactions");
     			transactions.sort(function(a,b) { return Date.parse(a.date)-Date.parse(b.date)}); //chronological order
     			investment=transactions[0].transfer=='investment'; // NEW
@@ -447,7 +452,10 @@ function openAccount() {
 	  			}
 				else buildTransactionsList();
 			}
-		}
+	}
+	request.onerror==function(err) {
+		alert(err.message);
+	}
 }
   
 // LIST ACCOUNT TRANSACTIONS
@@ -570,7 +578,7 @@ function drawTotals() {
 	canvas.textAlign='left';
 	var w=scrW/12;
 	var h=scrH/12;
-	var offset=11-lastSave; // latest month is at right of screen
+	var offset=11-today.getMonth(); // latest month is at right of screen
 	for(var i=0;i<12;i++) {
 		console.log('total '+i+': '+totals[i]);
 		var x=(i+offset)%12*w;
@@ -626,13 +634,8 @@ id("fileChooser").addEventListener('change', function() {
 
 // BACKUP
 function backup() {
-  	var fileName="money";
-	var date=new Date();
-	fileName+=date.getFullYear();
-	if(date.getMonth()<9) fileName+='0'; // date format YYYYMMDD
-	fileName+=(date.getMonth()+1);
-	if(date.getDate()<10) fileName+='0';
-	fileName+=date.getDate()+".json";
+	backupWeek=thisWeek;
+  	var fileName="Scrooge-"+backupWeek+".json";
 	var dbTransaction=db.transaction('logs',"readwrite");
 	var dbObjectStore=dbTransaction.objectStore('logs');
 	console.log("database ready");
@@ -662,11 +665,10 @@ function backup() {
    			a.download=fileName;
     		document.body.appendChild(a);
     		a.click();
-			var today=new Date();
-			lastSave=today.getMonth();
-			console.log('save lastSave: '+lastSave);
-			window.localStorage.setItem('lastSave',lastSave); // remember month of backup
-			var month=parseInt(lastSave);
+			console.log('save backupWeek: '+backupWeek);
+			window.localStorage.setItem('backupWeek',backupWeek); // remember week of backup...
+			window.localStorage.setItem('changed',false); // and reset 'changed'
+			var month=today.getMonth()+1;
 			console.log('save total '+grandTotal+' for month '+month);
 			totals[month]=grandTotal; // saves grand total for each monthly backup
 			window.localStorage.setItem('totals',JSON.stringify(totals));
@@ -684,8 +686,11 @@ id("canvas").width=scrW;
 id("canvas").height=scrH;
 console.log('canvas size: '+id("canvas").width+'x'+id("canvas").height);
 canvas=id('canvas').getContext('2d');
-lastSave=window.localStorage.getItem('lastSave'); // month of last backup
-console.log('lastSave: '+lastSave);
+backupWeek=window.localStorage.getItem('backupWeek'); // week of last backup
+if(backupWeek==null) backupWeek=0;
+changed=window.localStorage.getItem('changed'); // any changes since last backup
+if(changed==null) changed=false;
+console.log('backupWeek: '+backupWeek+'; changed: '+changed);
 totals=JSON.parse(window.localStorage.getItem('totals')); // grand totals for each monthly backup
 console.log('totals: '+totals);
 if(totals==null) totals=[];
