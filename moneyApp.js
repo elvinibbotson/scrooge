@@ -825,6 +825,9 @@ request.onsuccess=function(event) {
 			listAccounts();
 		}
 	}
+	request.onerror=function(err) {
+		alert('error getting transactions: '+err.message);
+	}
 }
 // implement service worker if browser is PWA friendly
 if(navigator.serviceWorker.controller) {
